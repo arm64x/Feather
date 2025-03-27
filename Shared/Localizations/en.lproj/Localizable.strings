@@ -289,6 +289,8 @@
 "SETTINGS_VIEW_CONTROLLER_SECTION_FOOTER_ISSUES" = "If any issues occur within Feather please report it via the GitHub repository. When submitting an issue, be sure to submit any logs.";
 "SETTINGS_VIEW_CONTROLLER_SECTION_FOOTER_SERVER_LIMITATIONS" = "Sadly due to limitations server certificates will need to be re-renewed every year to keep Feathers local features working properly, tap this button to retrieve the most up-to-date files from our repositories.";
 "SETTINGS_VIEW_CONTROLLER_SECTION_FOOTER_DEFAULT_SERVER" = "Default server goes to %@";
+"SETTINGS_VIEW_CONTROLLER_SECTION_CHECK_SIGNED_APP_UPDATE" = "Check For Signed App Updates";
+"SETTINGS_VIEW_CONTROLLER_SECTION_CHECK_SIGNED_APP_UPDATE_DESCRIPTION" = "Whether updates should be checked, this is an experimental feature.";
 
 "SETTINGS_VIEW_CONTROLLER_TITLE" = "Server Options";
 "SETTINGS_VIEW_CONTROLLER_TITLE_ONLINE" = "Online";
