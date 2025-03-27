@@ -104,10 +104,10 @@ extension SettingsViewController {
 	
 	public func resetAllAction() {
 		resetAlert(
-			title: "Reset All Settings",
-			message: "This action is IRREVERSIBLE. The app will go back to its original state.",
+			title: String.localized("SETTINGS_VIEW_CONTROLLER_CELL_RESET_ALL_SETTINGS"),
+			message: String.localized("SETTINGS_VIEW_CONTROLLER_CELL_RESET_ALL_SETTINGS_DESCRIPTION"),
 			actions: [
-				("Proceed", .destructive, {
+				(String.localized("SETTINGS_VIEW_CONTROLLER_PROCEED"), .destructive, {
 					ResetDataClass.shared.resetAll()
 				})
 			]
