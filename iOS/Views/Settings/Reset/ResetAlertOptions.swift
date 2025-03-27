@@ -107,7 +107,7 @@ extension SettingsViewController {
 			title: String.localized("SETTINGS_VIEW_CONTROLLER_CELL_RESET_ALL_SETTINGS"),
 			message: String.localized("SETTINGS_VIEW_CONTROLLER_CELL_RESET_ALL_SETTINGS_DESCRIPTION"),
 			actions: [
-				(String.localized("SETTINGS_VIEW_CONTROLLER_PROCEED"), .destructive, {
+				(String.localized("SETTINGS_VIEW_CONTROLLER_CELL_RESET_ALL_SETTINGS_PROCEED"), .destructive, {
 					ResetDataClass.shared.resetAll()
 				})
 			]
