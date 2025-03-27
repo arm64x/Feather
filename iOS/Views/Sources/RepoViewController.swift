@@ -71,10 +71,10 @@ struct RepoViewController: View {
 						UIPasteboard.general.string = self.sources?.map{ $0.sourceURL!.absoluteString }.joined(separator: "\n")
 						presentationMode.wrappedValue.dismiss()
 					}) {
-						Text(String.localized("SOURCES_VIEW_ADD_SOURCES_ALERT_BUTTON_EXPORT_REPO"))
+						Text(String.localized("SOURCES_VIEW_ADD_SOURCES_ALERT_SUPPORT"))
 					}
 				} footer: {
-					Text("Supports importing from KravaSign and ESign")
+					Text(String.localized("SOURCES_VIEW_ADD_SOURCES_ALERT_BUTTON_EXPORT_REPO")"Supports importing from KravaSign and ESign")
 				}
 			}
 			.navigationTitle(String.localized("SOURCES_VIEW_ADD_SOURCES_ALERT_TITLE"))
