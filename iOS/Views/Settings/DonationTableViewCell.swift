@@ -112,8 +112,8 @@ class DonationTableViewCell: UITableViewCell {
 		)
 		let item4 = DonationItemView(
 			icon: UIImage(systemName: "heart.text.square.fill"),
-			title: "Remove This Alert",
-			description: "Remove annoying alerts like these after getting beta access!"
+			title: String.localized("DONATION_REMOVE_ALERT"),
+			description: String.localized("DONATION_REMOVE_DESCRIPTION")
 		)
 		
 		stackView.addArrangedSubview(item2)
