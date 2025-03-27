@@ -407,7 +407,8 @@
 // MARK: - Donation
 "DONATION_TITLE" = "Quyên góp";
 "DONATION_DONATIONS" = "Quyên góp";
-
+"DONATION_REMOVE_ALERT" = "Xóa thông báo này";
+"DONATION_REMOVE_DESCRIPTION" = "Xóa những thông báo khó chịu như thế này sau khi có quyền truy cập bản beta!";
 "DONATION_CELL_1_TITLE" = "Kho bí mật";
 "DONATION_CELL_1_DESCRIPTION" = "Nhận quyền truy cập vào kho bí mật của chúng tôi bằng cách quyên góp, sẽ cung cấp cho bạn quyền truy cập beta vào Feather.";
 
