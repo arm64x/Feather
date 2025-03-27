@@ -109,8 +109,8 @@ extension SourcesViewController {
 
 		switch indexPath.section {
 		case 0:
-			cell.textLabel?.text = "All Repositories"
-			cell.detailTextLabel?.text = "See all apps from your sources"
+			cell.textLabel?.text = String.localized("SOURCES_VIEW_CONTROLLER_REPOSITORIES_ALL")
+			cell.detailTextLabel?.text = String.localized("SOURCES_VIEW_CONTROLLER_REPOSITORIES_SEE_ALL")
 			
 			var repoIcon = "books.vertical.fill"
 			if #available(iOS 16.0, *) { repoIcon = "globe.desk.fill" }
