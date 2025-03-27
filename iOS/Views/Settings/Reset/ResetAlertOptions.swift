@@ -81,19 +81,19 @@ extension SettingsViewController {
 			title: "",
 			message: message,
 			actions: [
-				("Reset Network Cache", .default, {
+				(String.localized("SETTINGS_VIEW_CONTROLLER_CELL_RESET_NETWORK_CACHE"), .default, {
 					ResetDataClass.shared.clearNetworkCache()
 				}),
-				("Reset Sources", .default, {
+				(String.localized("SETTINGS_VIEW_CONTROLLER_CELL_RESET_SOURCES"), .default, {
 					ResetDataClass.shared.resetSources(resetAll: false)
 				}),
-				("Reset Signed Apps", .default, {
+				(String.localized("SETTINGS_VIEW_CONTROLLER_CELL_RESET_SIGNED_APPS"), .default, {
 					ResetDataClass.shared.deleteSignedApps()
 				}),
-				("Reset Downloaded Apps", .default, {
+				(String.localized("SETTINGS_VIEW_CONTROLLER_CELL_RESET_DOWNLOADED_APPS"), .default, {
 					ResetDataClass.shared.deleteDownloadedApps()
 				}),
-				("Reset Certificates", .default, {
+				(String.localized("SETTINGS_VIEW_CONTROLLER_CELL_RESET_CERTIFICATES"), .default, {
 					ResetDataClass.shared.resetCertificates(resetAll: false)
 				}),
 			]
