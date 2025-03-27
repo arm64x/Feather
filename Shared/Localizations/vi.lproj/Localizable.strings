@@ -121,6 +121,7 @@
 "SOURCES_VIEW_ADD_SOURCES_ALERT_BUTTON_IMPORT_REPO" = "Nhập kho ứng dụng";
 "SOURCES_VIEW_ADD_SOURCES_ALERT_BUTTON_EXPORT_REPO" = "Xuất kho ứng dụng";
 "SOURCES_VIEW_ADD_SOURCES_ALERT_BUTTON_EXPORT_REPO_ACTION_SUCCESS" = "Đã sao chép kho ứng dụng vào clipboard";
+"SOURCES_VIEW_ADD_SOURCES_ALERT_SUPPORT" = "Hỗ trợ nhập từ KravaSign và ESign";
 //Footer Validation
 "SOURCES_VIEW_ADD_SOURCES_FOOTER_NOTSTARTED" = "Nhập URL để bắt đầu xác thực.";
 "SOURCES_VIEW_ADD_SOURCES_FOOTER_NOTVALIDJSON" = "JSON không hợp lệ, vui lòng kiểm tra lại.";
