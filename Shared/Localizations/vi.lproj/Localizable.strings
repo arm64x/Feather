@@ -105,6 +105,8 @@
 // MARK: - SourcesViewController
 // Repositories title
 "SOURCES_VIEW_CONTROLLER_REPOSITORIES" = "Kho ứng dụng";
+"SOURCES_VIEW_CONTROLLER_REPOSITORIES_ALL" = "Tất cả nguồn";
+"SOURCES_VIEW_CONTROLLER_REPOSITORIES_SEE_ALL" = "Xem tất cả ứng dụng từ nguồn của bạn";
 // Add repo button
 "SOURCES_VIEW_CONTROLLER_ADD_SOURCES" = "Thêm kho";
 // Number of sources, i.e. "100 Sources"
