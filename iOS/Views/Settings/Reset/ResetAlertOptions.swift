@@ -36,31 +36,31 @@ extension SettingsViewController {
 	}
 	
 	fileprivate func cacheSize() -> String {
-		var totalCacheSize = URLCache.shared.currentDiskUsage
-		if let nukeCache = ImagePipeline.shared.configuration.dataCache as? DataCache {
-			totalCacheSize += nukeCache.totalSize
-		}
-		return "Network Cache size: \(ByteCountFormatter.string(fromByteCount: Int64(totalCacheSize), countStyle: .file))"
+	    var totalCacheSize = URLCache.shared.currentDiskUsage
+	    if let nukeCache = ImagePipeline.shared.configuration.dataCache as? DataCache {
+	        totalCacheSize += nukeCache.totalSize
+	    }
+	    return String.localized("SETTINGS_VIEW_CONTROLLER_CELL_RESET_NETWORK_CACHE_SIZE", arguments: ByteCountFormatter.string(fromByteCount: Int64(totalCacheSize), countStyle: .file))
 	}
 	
 	fileprivate func sourcesCount() -> String {
-		let l = CoreDataManager.shared.getAZSources()
-		return "Source Count: \(l.count)"
+	    let l = CoreDataManager.shared.getAZSources()
+	    return String.localized("SETTINGS_VIEW_CONTROLLER_CELL_SOURCES_COUNT", arguments: l.count)
 	}
 	
 	fileprivate func downloadedCount() -> String {
-		let l = CoreDataManager.shared.getDatedDownloadedApps()
-		return "Downloaded App Count: \(l.count)"
+	    let l = CoreDataManager.shared.getDatedDownloadedApps()
+	    return String.localized("SETTINGS_VIEW_CONTROLLER_CELL_DOWNLOADED_APPS_COUNT", arguments: l.count)
 	}
 	
 	fileprivate func signedCount() -> String {
-		let l = CoreDataManager.shared.getDatedSignedApps()
-		return "Signed App Count: \(l.count)"
+	    let l = CoreDataManager.shared.getDatedSignedApps()
+	    return String.localized("SETTINGS_VIEW_CONTROLLER_CELL_SIGNED_APPS_COUNT", arguments: l.count)
 	}
 	
 	fileprivate func certificateCount() -> String {
-		let l = CoreDataManager.shared.getDatedCertificate()
-		return "Certificate Count: \(l.count)"
+	    let l = CoreDataManager.shared.getDatedCertificate()
+	    return String.localized("SETTINGS_VIEW_CONTROLLER_CELL_CERTIFICATES_COUNT", arguments: l.count)
 	}
 	
 	public func resetOptionsAction() {
