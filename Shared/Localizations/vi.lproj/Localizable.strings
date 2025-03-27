@@ -198,12 +198,12 @@
 // MARK: - SigningsOptionsViewController
 
 "APP_SIGNING_VIEW_CONTROLLER_CELL_SIGNING_OPTIONS_PROTECTIONS" = "Bật bảo vệ";
-"APP_SIGNING_VIEW_CONTROLLER_CELL_SIGNING_OPTIONS_PROTECTIONS_DESCRIPTION" = "Bật bảo vệ sẽ thêm một chuỗi ngẫu nhiên vào mỗi định danh bundle, điều này là để bảo vệ ID Apple liên quan đến chứng chỉ của bạn khỏi bị Apple gắn cờ. Tuy nhiên, nếu bạn không quan tâm đến điều này, bạn có thể bỏ qua nó.";
+"APP_SIGNING_VIEW_CONTROLLER_CELL_SIGNING_OPTIONS_PROTECTIONS_DESCRIPTION" = "Bật bảo vệ sẽ thêm một chuỗi ngẫu nhiên vào mỗi bundle định danh, điều này là để bảo vệ ID Apple liên quan đến chứng chỉ của bạn khỏi bị Apple gắn cờ. Tuy nhiên, nếu bạn không quan tâm đến điều này, bạn có thể bỏ qua nó.";
 
 "APP_SIGNING_VIEW_CONTROLLER_CELL_SIGNING_OPTIONS_DYNAMIC_PROTECTION" = "Bảo vệ động";
-"APP_SIGNING_VIEW_CONTROLLER_CELL_SIGNING_OPTIONS_DYNAMIC_PROTECTION_DESCRIPTION" = "Bảo vệ động sẽ chỉ áp dụng bảo vệ PPQ nếu định danh bundle tồn tại trên App Store. Điều này yêu cầu kết nối internet trong quá trình ký.";
+"APP_SIGNING_VIEW_CONTROLLER_CELL_SIGNING_OPTIONS_DYNAMIC_PROTECTION_DESCRIPTION" = "Bảo vệ động sẽ chỉ áp dụng bảo vệ PPQ nếu bundle định danh tồn tại trên App Store. Điều này yêu cầu kết nối internet trong quá trình ký.";
 
-"APP_SIGNING_VIEW_CONTROLLER_CELL_SIGNING_OPTIONS_IDENTIFIERS" = "Định danh Bundle";
+"APP_SIGNING_VIEW_CONTROLLER_CELL_SIGNING_OPTIONS_IDENTIFIERS" = "Bundle định danh";
 "APP_SIGNING_VIEW_CONTROLLER_CELL_SIGNING_OPTIONS_IDENTIFIERS_NEW" = "Định danh mới";
 "APP_SIGNING_VIEW_CONTROLLER_CELL_SIGNING_OPTIONS_IDENTIFIERS_ID" = "Định danh";
 "APP_SIGNING_VIEW_CONTROLLER_CELL_SIGNING_OPTIONS_IDENTIFIERS_ID_REPLACEMENT" = "Thay thế";
@@ -217,7 +217,7 @@
 
 "APP_SIGNING_VIEW_CONTROLLER_CELL_SIGNING_OPTIONS_INSTALLAFTERSIGNED" = "Cài đặt sau khi ký";
 
-"APP_SIGNING_VIEW_CONTROLLER_CELL_SIGNING_OPTIONS_TITLE" = "Tùy chọn ký tên";
+"APP_SIGNING_VIEW_CONTROLLER_CELL_SIGNING_OPTIONS_TITLE" = "Tùy chọn ký";
 
 "APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_PLUGINS" = "Xóa tất cả PlugIns";
 "APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_PLUGINS_DESCRIPTION" = "Xóa thư mục PlugIns bên trong ứng dụng, thư mục này thường có một số thành phần để ứng dụng hoạt động bình thường.";
@@ -243,8 +243,8 @@
 "APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_FORCE_FULLSCREEN" = "Ép buộc toàn màn hình";
 "APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_FORCE_FULLSCREEN_DESCRIPTION" = "Buộc chỉ các khả năng toàn màn hình trong các ứng dụng iPad, không cho phép chia sẻ màn hình với các ứng dụng khác. Trên màn hình ngoài, cửa sổ cho một ứng dụng có cài đặt này duy trì kích thước canvas của nó.";
 
-"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_DELETE_PLACEHOLDER_WATCH_APP" = "Xóa ứng dụng Watch giữ chỗ";
-"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_DELETE_PLACEHOLDER_WATCH_APP_DESCRIPTION" = "Xóa trình giữ chỗ đồng hồ không mong muốn, không có ở đó, có trong các ứng dụng như YouTube music, v.v.";
+"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_DELETE_PLACEHOLDER_WATCH_APP" = "Xóa ứng dụng Watch";
+"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_DELETE_PLACEHOLDER_WATCH_APP_DESCRIPTION" = "Xóa trình giữ chỗ đồng hồ không mong muốn, không có ở đó, có trong các ứng dụng như YouTube Music, v.v.";
 
 "APP_SIGNING_INPUT_VIEW_CONTROLLER_FORCELOCALIZATIONS" = "Ép buộc bản địa hóa";
 "APP_SIGNING_INPUT_VIEW_CONTROLLER_FORCELOCALIZATIONS_DESCRIPTION" = "Buộc bản địa hóa bằng cách sửa đổi mọi gói bản địa hóa trong ứng dụng khi cố gắng thay đổi tên của ứng dụng.";
