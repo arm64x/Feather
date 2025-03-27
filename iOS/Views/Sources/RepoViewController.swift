@@ -74,7 +74,7 @@ struct RepoViewController: View {
 						Text(String.localized("SOURCES_VIEW_ADD_SOURCES_ALERT_SUPPORT"))
 					}
 				} footer: {
-					Text(String.localized("SOURCES_VIEW_ADD_SOURCES_ALERT_BUTTON_EXPORT_REPO")
+					Text(String.localized("SOURCES_VIEW_ADD_SOURCES_ALERT_BUTTON_EXPORT_REPO"))
 				}
 			}
 			.navigationTitle(String.localized("SOURCES_VIEW_ADD_SOURCES_ALERT_TITLE"))
