@@ -81,14 +81,20 @@ extension IconsListViewController {
 	}
 	
 	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		tableView.deselectRow(at: indexPath, animated: true)
-		let icon = icons(forSection: indexPath.section)[indexPath.row]
-		
-		UIApplication.shared.setAlternateIconName(icon.key) { error in
-			Debug.shared.log(message:"\(error?.localizedDescription ?? "Unknown Error")")
-		}
-		
-		self.tableView.reloadRows(at: self.tableView.indexPathsForVisibleRows ?? [IndexPath](), with: .none)
+	    tableView.deselectRow(at: indexPath, animated: true)
+	    let icon = icons(forSection: indexPath.section)[indexPath.row]
+	    
+	    UIApplication.shared.setAlternateIconName(icon.key) { [weak self] error in
+	        DispatchQueue.main.async {
+	            if let error = error {
+	                Debug.shared.log(message: "Icon change error: \(error.localizedDescription)")
+	                // Có thể hiển thị thông báo lỗi cho người dùng
+	            } else {
+	                // Reload toàn bộ bảng để cập nhật checkmark
+	                self?.tableView.reloadData()
+	            }
+	        }
+	    }
 	}
 }
 
