@@ -412,7 +412,8 @@
 // MARK: - Donation
 "DONATION_TITLE" = "Donate";
 "DONATION_DONATIONS" = "Donations";
-
+"DONATION_REMOVE_ALERT" = "Remove This Alert";
+"DONATION_REMOVE_DESCRIPTION" = "Remove annoying alerts like these after getting beta access!";
 "DONATION_CELL_1_TITLE" = "Secret Repo";
 "DONATION_CELL_1_DESCRIPTION" = "Get access to our secret repo by donating, will provide you with beta access to Feather.";
 
