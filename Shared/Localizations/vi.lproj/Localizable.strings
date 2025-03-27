@@ -288,7 +288,7 @@
 // Footers
 "SETTINGS_VIEW_CONTROLLER_SECTION_FOOTER_ISSUES" = "Nếu có bất kỳ sự cố nào xảy ra trong Feather, vui lòng báo cáo sự cố đó thông qua kho GitHub. Khi gửi sự cố, hãy nhớ gửi bất kỳ nhật ký nào.";
 "SETTINGS_VIEW_CONTROLLER_SECTION_FOOTER_SERVER_LIMITATIONS" = "Đáng buồn thay, do các giới hạn, chứng chỉ máy chủ sẽ cần được gia hạn lại hàng năm để giữ cho các tính năng cục bộ của Feathers hoạt động bình thường, hãy nhấn vào nút này để truy xuất các tệp cập nhật nhất từ kho lưu trữ của chúng tôi.";
-"SETTINGS_VIEW_CONTROLLER_SECTION_FOOTER_DEFAULT_SERVER" = "Máy chủ mặc định là %@";
+"SETTINGS_VIEW_CONTROLLER_SECTION_FOOTER_DEFAULT_SERVER" = "Máy chủ mặc định là %@.\nBạn có thể sử dụng máy chủ Việt Nam: https://plist-server.codevn.net";
 
 "SETTINGS_VIEW_CONTROLLER_TITLE" = "Tùy chọn máy chủ";
 "SETTINGS_VIEW_CONTROLLER_TITLE_ONLINE" = "Trực tuyến";
