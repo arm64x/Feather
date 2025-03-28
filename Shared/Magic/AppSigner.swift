@@ -29,15 +29,21 @@ func signInitialApp(bundle: BundleOptions, mainOptions: SigningMainDataWrapper, 
 			try fileManager.createDirectory(at: tmpDir, withIntermediateDirectories: true)
 			try fileManager.copyItem(at: appPath, to: tmpDirApp)
 			
-			if let info = NSDictionary(contentsOf: tmpDirApp.appendingPathComponent("Info.plist"))!.mutableCopy() as? NSMutableDictionary {
-				try updateInfoPlist(infoDict: info, main: mainOptions, options: signingOptions, icon: mainOptions.mainOptions.iconURL, app: tmpDirApp)
-				
-				if let iconsDict = info["CFBundleIcons"] as? [String: Any],
-				   let primaryIconsDict = iconsDict["CFBundlePrimaryIcon"] as? [String: Any],
-				   let iconFiles = primaryIconsDict["CFBundleIconFiles"] as? [String],
-				   let iconFileName = iconFiles.first {
-					iconURL = iconFileName
-				}
+			if let info = NSDictionary(contentsOf: tmpDirApp.appendingPathComponent("Info.plist"))?.mutableCopy() as? NSMutableDictionary {
+			    try updateInfoPlist(infoDict: info, main: mainOptions, options: signingOptions, icon: mainOptions.mainOptions.iconURL, app: tmpDirApp)
+			    
+			    // Thử lấy icon từ CFBundleIcons
+			    if let iconsDict = info["CFBundleIcons"] as? [String: Any],
+			       let primaryIconsDict = iconsDict["CFBundlePrimaryIcon"] as? [String: Any],
+			       let iconFiles = primaryIconsDict["CFBundleIconFiles"] as? [String],
+			       let iconFileName = iconFiles.first {
+			        iconURL = iconFileName
+			    }
+			    // Nếu không tìm thấy, thử lấy trực tiếp từ CFBundleIconFiles
+			    else if let iconFiles = info["CFBundleIconFiles"] as? [String],
+			            let iconFileName = iconFiles.first {
+			        iconURL = iconFileName
+			    }
 			}
 
 			let handler = TweakHandler(urls: signingOptions.signingOptions.toInject, app: tmpDirApp)
