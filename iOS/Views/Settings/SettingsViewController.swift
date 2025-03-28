@@ -100,7 +100,7 @@ extension SettingsViewController {
 		}
 		
 		switch section {
-		case sectionTitles.count - 1: return "Feather \(AppDelegate().logAppVersionInfo()) • iOS \(UIDevice.current.systemVersion)\nPhiên bản Tiếng Việt được phát triển bởi: @hcsavn (bé Chou) & @arm64x (Lê Tí)"
+		case sectionTitles.count - 1: return "Feather \(AppDelegate().logAppVersionInfo()) • iOS \(UIDevice.current.systemVersion)\nPhiên bản Tiếng Việt được phát triển bởi: @hcsavn (Bé Chou) & @arm64x (Lê Tí)"
 		default:
 			return nil
 		}
