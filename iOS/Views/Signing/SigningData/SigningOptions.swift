@@ -53,8 +53,8 @@ struct SigningOptions: Codable {
 	var removeProvisioningFile: Bool = true
 	var removeWatchPlaceHolder: Bool = true
 	
-	var forceMinimumVersion: String = "Automatic"
-	var forceLightDarkAppearence: String = "Automatic"
+	var forceMinimumVersion: String = String.localized("APP_SIGNING_VIEW_CONTROLLER_CELL_OPTION_AUTOMATIC")
+	var forceLightDarkAppearence: String = String.localized("APP_SIGNING_VIEW_CONTROLLER_CELL_OPTION_AUTOMATIC")
 }
 
 extension UserDefaults {
