@@ -11,13 +11,13 @@ extension UIUserInterfaceStyle: @retroactive CaseIterable {
 	var description: String {
 		switch self {
 		case .unspecified:
-			return "System"
+			return NSLocalizedString("UI_MODE_SYSTEM", comment: "")
 		case .light:
-			return "Light"
+			return NSLocalizedString("UI_MODE_LIGHT", comment: "")
 		case .dark:
-			return "Dark"
+			return NSLocalizedString("UI_MODE_DARK", comment: "")
 		@unknown default:
-			return "Unknown Mode"
+			return NSLocalizedString("UI_MODE_UNKNOWN", comment: "")
 		}
 	}
 }
