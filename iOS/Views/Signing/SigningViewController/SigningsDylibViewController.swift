@@ -70,7 +70,7 @@ class SigningsDylibViewController: UITableViewController {
 	}
 
 	fileprivate func setupNavigation() {
-		title = "Remove Dylibs"
+		title = NSLocalizedString("APP_SIGNING_VIEW_CONTROLLER_CELL_ALERT_ADVANCED_USERS_ONLY_WHO_CARES", comment: "")
 		
 	}
 
