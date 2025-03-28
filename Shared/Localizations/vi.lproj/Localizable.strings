@@ -361,6 +361,7 @@
 // MARK: - SettingsViewController -> AboutViewController
 "ABOUT_VIEW_CONTROLLER_SECTION_TITLE_CREDITS" = "Đóng góp";
 "ABOUT_VIEW_CONTROLLER_SECTION_TITLE_SPONSORS" = "Nhà tài trợ";
+"ABOUT_VIEW_CONTROLLER_SECTION_TITLE_THANKS" = "💙 Điều này sẽ không thể thực hiện được nếu không có những nhà tài trợ của tôi!";
 
 "ABOUT_VIEW_CONTROLLER_SECTION_TITLE_DEVICE" = "Thiết bị";
 "ABOUT_VIEW_CONTROLLER_SECTION_TITLE_ACKNOWLEDGEMENTS" = "Lời cảm ơn";
