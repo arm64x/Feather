@@ -200,7 +200,7 @@ extension SourcesViewController {
 		switch indexPath.section {
 		case 0:
 			let savc = SourceAppViewController()
-			savc.name = "All Repositories"
+			savc.name = String.localized("SOURCES_VIEW_CONTROLLER_REPOSITORIES_ALL")
 			savc.uri = sources.compactMap { $0.sourceURL }
 			navigationController?.pushViewController(savc, animated: true)
 		case 1:
