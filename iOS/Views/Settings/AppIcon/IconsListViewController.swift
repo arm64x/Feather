@@ -85,19 +85,7 @@ extension IconsListViewController {
 		let icon = icons(forSection: indexPath.section)[indexPath.row]
 		
 		UIApplication.shared.setAlternateIconName(icon.key) { error in
-		    if let error = error {
-		        print("Failed to change icon: \(error.localizedDescription)")
-		        
-		        // Kiểm tra các loại lỗi cụ thể
-		        switch error {
-		        case let nsError as NSError where nsError.domain == NSCocoaErrorDomain:
-		            print("Cocoa Error: \(nsError.code)")
-		        default:
-		            print("Unexpected error type")
-		        }
-		    } else {
-		        print("Icon changed successfully")
-		    }
+			Debug.shared.log(message:"\(error?.localizedDescription ?? "Unknown Error")")
 		}
 		
 		self.tableView.reloadRows(at: self.tableView.indexPathsForVisibleRows ?? [IndexPath](), with: .none)
