@@ -235,8 +235,8 @@
 "APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_URLSCHEME" = "Xóa URL Scheme";
 "APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_URLSCHEME_DESCRIPTION" = "Xóa mọi lược đồ URL có thể có (ví dụ: 'feather://')";
 
-"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_ALLOW_BROWSING_DOCUMENTS" = "Không cho phép duyệt tài liệu";
-"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_ALLOW_BROWSING_DOCUMENTS_DESCRIPTION" = "Không cho phép các ứng dụng khác mở và chỉnh sửa các tệp được lưu trữ trong thư mục Tài liệu.  Nếu tắt, người dùng không thể đặt ứng dụng làm vị trí lưu mặc định trong Cài đặt.";
+"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_ALLOW_BROWSING_DOCUMENTS" = "Cho phép duyệt tệp";
+"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_ALLOW_BROWSING_DOCUMENTS_DESCRIPTION" = "Cho phép các ứng dụng khác mở và chỉnh sửa các tệp được lưu trữ trong thư mục ứng dụng Tệp. Nếu tắt, người dùng không thể đặt ứng dụng làm vị trí lưu mặc định trong Cài đặt.";
 
 "APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_ALLOW_ITUNES_SHARING" = "Không cho phép chia sẻ iTunes";
 "APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_ALLOW_ITUNES_SHARING_DESCRIPTION" = "Ngăn ứng dụng chia sẻ thư mục tài liệu của chúng với iTunes và Finder.";
