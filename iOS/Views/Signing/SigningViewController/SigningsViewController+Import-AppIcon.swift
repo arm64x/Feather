@@ -49,7 +49,7 @@ extension SigningsViewController: UIDocumentPickerDelegate & UIImagePickerContro
 	    }
 	
 	    let cancelAction = UIAlertAction(
-	        title: NSLocalizedString("APP_SIGNING_VIEW_CONTROLLER_CELL_CANCEL", comment: ""),
+	        title: NSLocalizedString("CANCEL", comment: ""),
 	        style: .cancel,
 	        handler: nil
 	    )
