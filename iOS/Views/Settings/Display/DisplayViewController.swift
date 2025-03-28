@@ -10,7 +10,15 @@ import UIKit
 
 class DisplayViewController: FRSTableViewController {
 
-	let collectionData = ["Default", "Berry", "Mint", "Dr Pepper", "Cool Blue", "Fuchsia", "Purplish"]
+	let collectionData = [
+	    NSLocalizedString("SETTINGS_VIEW_CONTROLLER_CELL_DISPLAY_COLOR_DEFAULT", comment: ""),
+	    NSLocalizedString("SETTINGS_VIEW_CONTROLLER_CELL_DISPLAY_COLOR_BERRY", comment: ""),
+	    NSLocalizedString("SETTINGS_VIEW_CONTROLLER_CELL_DISPLAY_COLOR_MINT", comment: ""),
+	    NSLocalizedString("SETTINGS_VIEW_CONTROLLER_CELL_DISPLAY_COLOR_DR_PEPPER", comment: ""),
+	    NSLocalizedString("SETTINGS_VIEW_CONTROLLER_CELL_DISPLAY_COLOR_COOL_BLUE", comment: ""),
+	    NSLocalizedString("SETTINGS_VIEW_CONTROLLER_CELL_DISPLAY_COLOR_FUCHSIA", comment: ""),
+	    NSLocalizedString("SETTINGS_VIEW_CONTROLLER_CELL_DISPLAY_COLOR_PURPLISH", comment: "")
+	]
 	let collectionDataColors = ["848ef9", "ff7a83", "a6e3a1", "711f25", "4161F1", "FF00FF", "D7B4F3"]
 	
 	override func viewDidLoad() {
