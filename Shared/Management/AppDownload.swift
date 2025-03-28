@@ -149,44 +149,45 @@ class AppDownload: NSObject {
 
 	func addToApps(bundlePath: String, uuid: String, sourceLocation: String? = nil, completion: @escaping (Error?) -> Void) {
 	    guard let bundle = Bundle(path: bundlePath) else {
-	        let error = NSError(domain: "Feather", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to load bundle at \(bundlePath)"])
-	        completion(error)
-	        return
-	    }
-	
-	    if let infoDict = bundle.infoDictionary {
-	        var iconURL = ""
-	        
-	        // First try CFBundleIcons
-	        if let iconsDict = infoDict["CFBundleIcons"] as? [String: Any],
-	           let primaryIconsDict = iconsDict["CFBundlePrimaryIcon"] as? [String: Any],
-	           let iconFiles = primaryIconsDict["CFBundleIconFiles"] as? [String],
-	           let iconFileName = iconFiles.first,
-	           let iconPath = bundle.path(forResource: iconFileName + "@2x", ofType: "png") ?? bundle.path(forResource: iconFileName, ofType: "png") {
-	            iconURL = URL(fileURLWithPath: iconPath).lastPathComponent
-	        }
-	        // Fallback to CFBundleIconFiles if CFBundleIcons wasn't found or didn't yield a valid icon
-	        else if let iconFiles = infoDict["CFBundleIconFiles"] as? [String],
-	                let iconFileName = iconFiles.first,
-	                let iconPath = bundle.path(forResource: iconFileName + "@2x", ofType: "png") ?? bundle.path(forResource: iconFileName, ofType: "png") {
-	            iconURL = URL(fileURLWithPath: iconPath).lastPathComponent
-	        }
-	
-	        CoreDataManager.shared.addToDownloadedApps(
-	            version: (infoDict["CFBundleShortVersionString"] as? String) ?? "1.0",
-	            name: (infoDict["CFBundleDisplayName"] as? String ?? infoDict["CFBundleName"] as? String) ?? "Unknown",
-	            bundleidentifier: (infoDict["CFBundleIdentifier"] as? String) ?? "com.unknown",
-	            iconURL: iconURL,
-	            uuid: uuid,
-	            appPath: URL(fileURLWithPath: bundlePath).lastPathComponent,
-	            sourceLocation: sourceLocation) { _ in
-	        }
-	
-	        completion(nil)
-	    } else {
-	        let error = NSError(domain: "Feather", code: 3, userInfo: [NSLocalizedDescriptionKey: "Info.plist not found in bundle at \(bundlePath)"])
-	        completion(error)
-	    }
+ 	        let error = NSError(domain: "Feather", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to load bundle at \(bundlePath)"])
+ 	        completion(error)
+ 	        return
+ 	    }
+ 	
+ 	    if let infoDict = bundle.infoDictionary {
+ 	        var iconURL = ""
+ 	        
+ 	        // First, try CFBundleIcons
+ 	        if let iconsDict = infoDict["CFBundleIcons"] as? [String: Any],
+ 	           let primaryIconsDict = iconsDict["CFBundlePrimaryIcon"] as? [String: Any],
+ 	           let iconFiles = primaryIconsDict["CFBundleIconFiles"] as? [String],
+ 	           let iconFileName = iconFiles.first,
+ 	           let iconPath = bundle.path(forResource: iconFileName + "@2x", ofType: "png") {
+ 	            iconURL = "\(URL(string: iconPath)?.lastPathComponent ?? "")"
+ 	        }
+ 	        // If CFBundleIcons is not available, try CFBundleIconFiles
+ 	        else if let iconFiles = infoDict["CFBundleIconFiles"] as? [String],
+		        let iconFileName = iconFiles.first,
+		        let iconPath = bundle.path(forResource: iconFileName + "@2x", ofType: "png") ?? 
+		                       bundle.path(forResource: iconFileName, ofType: "png") {
+		    iconURL = "\(URL(string: iconPath)?.lastPathComponent ?? "")"
+		}
+ 	
+ 	        CoreDataManager.shared.addToDownloadedApps(
+ 	            version: (infoDict["CFBundleShortVersionString"] as? String)!,
+ 	            name: (infoDict["CFBundleDisplayName"] as? String ?? infoDict["CFBundleName"] as? String)!,
+ 	            bundleidentifier: (infoDict["CFBundleIdentifier"] as? String)!,
+ 	            iconURL: iconURL,
+ 	            uuid: uuid,
+ 	            appPath: "\(URL(string: bundlePath)?.lastPathComponent ?? "")", 
+ 	            sourceLocation: sourceLocation) {_ in
+ 	        }
+ 	
+ 	        completion(nil)
+ 	    } else {
+ 	        let error = NSError(domain: "Feather", code: 3, userInfo: [NSLocalizedDescriptionKey: "Info.plist not found in bundle at \(bundlePath)"])
+ 	        completion(error)
+ 	    }
 	}
 }
 
