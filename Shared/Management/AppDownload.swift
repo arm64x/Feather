@@ -77,62 +77,74 @@ class AppDownload: NSObject {
 			return nil
 		}
 	}
-	
-	func extractCompressedBundle(packageURL: String, completion: @escaping (String?, Error?) -> Void) {
-		let fileURL = URL(fileURLWithPath: packageURL)
-		let destinationURL = fileURL.deletingLastPathComponent()
-		let fileManager = FileManager.default
-
-		if !fileManager.fileExists(atPath: fileURL.path) {
-			completion(nil, NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "File does not exist"]))
-			return
-		}
-
-		do {
-			try fileManager.unzipItem(at: fileURL, to: destinationURL, progress: progress)
-			
-			if progress.isCancelled {
-				if fileManager.fileExists(atPath: destinationURL.path) {
-					try? fileManager.removeItem(at: destinationURL)
-				}
-				cancelDownload()
-				completion(nil, NSError(domain: "", code: 1, userInfo: [NSLocalizedDescriptionKey: "Unzip operation was cancelled"]))
-				return
-			}
-
-			try fileManager.removeItem(at: fileURL)
-			
-			let payloadURL = destinationURL.appendingPathComponent("Payload")
-			let contents = try fileManager.contentsOfDirectory(at: payloadURL, includingPropertiesForKeys: nil, options: [])
-			
-			if let appDirectory = contents.first(where: { $0.pathExtension == "app" }) {
-				let sourceURL = appDirectory
-				let targetURL = destinationURL.appendingPathComponent(sourceURL.lastPathComponent)
-				try fileManager.moveItem(at: sourceURL, to: targetURL)
-				try fileManager.removeItem(at: destinationURL.appendingPathComponent("Payload"))
-				
-				let codeSignatureDirectory = targetURL.appendingPathComponent("_CodeSignature")
-				if fileManager.fileExists(atPath: codeSignatureDirectory.path) {
-					try fileManager.removeItem(at: codeSignatureDirectory)
-					Debug.shared.log(message: "Removed _CodeSignature directory")
-				}
-				
-				
-				completion(targetURL.path, nil)
-			} else {
-				completion(nil, NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No .app directory found in Payload"]))
-			}
-			
-		} catch {
-			Debug.shared.log(message: "\(error)")
-			if fileManager.fileExists(atPath: destinationURL.path) {
-				try? fileManager.removeItem(at: destinationURL)
-			}
-			cancelDownload()
-			completion(nil, error)
-		}
-	}
-
+    
+    func extractCompressedBundle(packageURL: String, completion: @escaping (String?, Error?) -> Void) {
+        let fileURL = URL(fileURLWithPath: packageURL)
+        let destinationURL = fileURL.deletingLastPathComponent()
+        let fileManager = FileManager.default
+        
+        guard fileManager.fileExists(atPath: fileURL.path) else {
+            completion(nil, NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "File does not exist"]))
+            return
+        }
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            let progress = Progress(totalUnitCount: 100)
+            let startTime = Date()
+            
+            do {
+                try fileManager.unzipItem(at: fileURL, to: destinationURL, progress: progress)
+                
+                print("⏱️ Unzip duration: \(Date().timeIntervalSince(startTime))s")
+                
+                if progress.isCancelled {
+                    if fileManager.fileExists(atPath: destinationURL.path) {
+                        try? fileManager.removeItem(at: destinationURL)
+                    }
+                    self.cancelDownload()
+                    DispatchQueue.main.async {
+                        completion(nil, NSError(domain: "", code: 1, userInfo: [NSLocalizedDescriptionKey: "Unzip operation was cancelled"]))
+                    }
+                    return
+                }
+                
+                try fileManager.removeItem(at: fileURL)
+                
+                let payloadURL = destinationURL.appendingPathComponent("Payload")
+                let contents = try fileManager.contentsOfDirectory(at: payloadURL, includingPropertiesForKeys: nil, options: [])
+                
+                if let appDirectory = contents.first(where: { $0.pathExtension == "app" }) {
+                    let targetURL = destinationURL.appendingPathComponent(appDirectory.lastPathComponent)
+                    try fileManager.moveItem(at: appDirectory, to: targetURL)
+                    try fileManager.removeItem(at: payloadURL)
+                    
+                    let codeSignatureDirectory = targetURL.appendingPathComponent("_CodeSignature")
+                    if fileManager.fileExists(atPath: codeSignatureDirectory.path) {
+                        try fileManager.removeItem(at: codeSignatureDirectory)
+                        Debug.shared.log(message: "Removed _CodeSignature directory")
+                    }
+                    
+                    DispatchQueue.main.async {
+                        completion(targetURL.path, nil)
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        completion(nil, NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No .app directory found in Payload"]))
+                    }
+                }
+                
+            } catch {
+                Debug.shared.log(message: "❌ Unzip error: \(error.localizedDescription)")
+                if fileManager.fileExists(atPath: destinationURL.path) {
+                    try? fileManager.removeItem(at: destinationURL)
+                }
+                self.cancelDownload()
+                DispatchQueue.main.async {
+                    completion(nil, error)
+                }
+            }
+        }
+    }
 
 
 	func addToApps(bundlePath: String, uuid: String, sourceLocation: String? = nil, completion: @escaping (Error?) -> Void) {
