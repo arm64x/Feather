@@ -220,7 +220,7 @@
 "APP_SIGNING_VIEW_CONTROLLER_CELL_SIGNING_OPTIONS_DISPLAYNAMES_ID_REPLACEMENT" = "Tên hiển thị mới";
 
 "APP_SIGNING_VIEW_CONTROLLER_CELL_SIGNING_OPTIONS_IMMEDIATELY_INSTALL_FROM_SOURCE" = "Cài đặt ngay lập tức từ nguồn";
-"APP_SIGNING_VIEW_CONTROLLER_CELL_SIGNING_OPTIONS_IMMEDIATELY_INSTALL_FROM_SOURCE_DESCRIPTION" = "Khi được bật, các ứng dụng được tải xuống từ các nguồn sẽ nhắc ký và cài đặt sau khi tải xuống.";
+"APP_SIGNING_VIEW_CONTROLLER_CELL_SIGNING_OPTIONS_IMMEDIATELY_INSTALL_FROM_SOURCE_DESCRIPTION" = "Khi được bật, các ứng dụng được tải xuống từ các nguồn sẽ ký và cài đặt sau khi tải xuống.";
 
 "APP_SIGNING_VIEW_CONTROLLER_CELL_SIGNING_OPTIONS_INSTALLAFTERSIGNED" = "Cài đặt sau khi ký";
 
@@ -238,23 +238,23 @@
 "APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_ALLOW_BROWSING_DOCUMENTS" = "Cho phép duyệt tệp";
 "APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_ALLOW_BROWSING_DOCUMENTS_DESCRIPTION" = "Cho phép các ứng dụng khác mở và chỉnh sửa các tệp được lưu trữ trong thư mục ứng dụng Tệp. Nếu tắt, người dùng không thể đặt ứng dụng làm vị trí lưu mặc định trong Cài đặt.";
 
-"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_ALLOW_ITUNES_SHARING" = "Không cho phép chia sẻ iTunes";
-"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_ALLOW_ITUNES_SHARING_DESCRIPTION" = "Ngăn ứng dụng chia sẻ thư mục tài liệu của chúng với iTunes và Finder.";
+"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_ALLOW_ITUNES_SHARING" = "Bật chia sẻ iTunes";
+"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_ALLOW_ITUNES_SHARING_DESCRIPTION" = "Cho phép ứng dụng chia sẻ thư mục tài liệu của chúng với iTunes và Finder.";
 
-"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_FORCE_PRO_MOTION" = "Không ép kích hoạt ProMotion";
-"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_FORCE_PRO_MOTION_DESCRIPTION" = "Loại bỏ việc ép kích hoạt ProMotion trong ứng dụng. Tùy chọn này có thể không đủ trên các phiên bản 15.x trở xuống.";
+"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_FORCE_PRO_MOTION" = "Bật ProMotion";
+"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_FORCE_PRO_MOTION_DESCRIPTION" = "Bật ProMotion trong ứng dụng. Tùy chọn này có thể không hoạt động với các phiên bản iOS 15.x trở xuống.";
 
-"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_FORCE_GAME_MODE" = "Không ép kích hoạt chế độ trò chơi";
-"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_FORCE_GAME_MODE_DESCRIPTION" = "Ngăn ứng dụng tự động bật chế độ trò chơi, cho phép hệ thống tự quản lý tài nguyên.";
+"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_FORCE_GAME_MODE" = "Bật chế độ trò chơi";
+"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_FORCE_GAME_MODE_DESCRIPTION" = "Cho phép ứng dụng tự động bật chế độ trò chơi, cho phép hệ thống tự quản lý tài nguyên.";
 
-"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_FORCE_FULLSCREEN" = "Không ép kích hoạt toàn màn hình";
+"APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_FORCE_FULLSCREEN" = "Bật toàn màn hình";
 "APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_FORCE_FULLSCREEN_DESCRIPTION" = "Cho phép các ứng dụng iPad chia sẻ màn hình với các ứng dụng khác, thay vì chỉ chạy ở chế độ toàn màn hình.";
 
 "APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_DELETE_PLACEHOLDER_WATCH_APP" = "Xóa ứng dụng Watch";
 "APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_DELETE_PLACEHOLDER_WATCH_APP_DESCRIPTION" = "Xóa ứng dụng Watch không cần thiết thường thấy trong các ứng dụng như YouTube Music.";
 
-"APP_SIGNING_INPUT_VIEW_CONTROLLER_FORCELOCALIZATIONS" = "Ép kích hoạt bản địa hóa";
-"APP_SIGNING_INPUT_VIEW_CONTROLLER_FORCELOCALIZATIONS_DESCRIPTION" = "kích hoạt ứng dụng sử dụng các bản dịch ngôn ngữ cụ thể, ngay cả khi hệ thống không sử dụng ngôn ngữ đó.";
+"APP_SIGNING_INPUT_VIEW_CONTROLLER_FORCELOCALIZATIONS" = "Bật bản địa hóa";
+"APP_SIGNING_INPUT_VIEW_CONTROLLER_FORCELOCALIZATIONS_DESCRIPTION" = "Kích hoạt ứng dụng sử dụng các bản dịch ngôn ngữ cụ thể, ngay cả khi hệ thống không sử dụng ngôn ngữ đó.";
 
 "APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_PROVISIONING" = "Xóa tệp Provisioning";
 "APP_SIGNING_INPUT_VIEW_CONTROLLER_REMOVE_PROVISIONING_DESCRIPTION" = "Xóa tệp .mobileprovision khỏi ứng dụng sau khi ký.";
