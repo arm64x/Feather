@@ -11,42 +11,66 @@ import UniformTypeIdentifiers
 
 extension SigningsViewController: UIDocumentPickerDelegate & UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 	func importAppIconFile() {
-		let actionSheet = UIAlertController(title: "Select App Icon", message: nil, preferredStyle: .actionSheet)
-		
-		let altIconAction = UIAlertAction(title: "Select Alt Icon", style: .default) { _ in
-			
-			let settingsAltIconView = SettingsAltIconView(mainOptions: self.mainOptions, app: self.getFilesForDownloadedApps(app: self.application as! DownloadedApps, getuuidonly: false))
-			let hostingcontroller = UIHostingController(rootView: settingsAltIconView)
-			
-			if let sheet = hostingcontroller.sheetPresentationController {
-				sheet.detents = [.medium()]
-			}
-			
-			self.present(hostingcontroller, animated: true, completion: nil)
-		}
-		
-		let documentPickerAction = UIAlertAction(title: "Choose from Files", style: .default) { [weak self] _ in
-			self?.presentDocumentPicker(fileExtension: [UTType.image])
-		}
-		
-		let photoLibraryAction = UIAlertAction(title: "Choose from Photos", style: .default) { [weak self] _ in
-			self?.presentPhotoLibrary(mediaTypes: ["public.image"])
-		}
-		
-		let cancelAction = UIAlertAction(title: String.localized("CANCEL"), style: .cancel, handler: nil)
-		
-		actionSheet.addAction(altIconAction)
-		actionSheet.addAction(documentPickerAction)
-		actionSheet.addAction(photoLibraryAction)
-		actionSheet.addAction(cancelAction)
-		
-		if let popoverController = actionSheet.popoverPresentationController {
-			popoverController.sourceView = self.view
-			popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
-			popoverController.permittedArrowDirections = []
-		}
-		
-		self.present(actionSheet, animated: true, completion: nil)
+	    let actionSheet = UIAlertController(
+	        title: NSLocalizedString("APP_SIGNING_VIEW_CONTROLLER_CELL_SELECT_APP_ICON", comment: ""),
+	        message: nil,
+	        preferredStyle: .actionSheet
+	    )
+	
+	    let altIconAction = UIAlertAction(
+	        title: NSLocalizedString("APP_SIGNING_VIEW_CONTROLLER_CELL_SELECT_ALT_ICON", comment: ""),
+	        style: .default
+	    ) { _ in
+	        let settingsAltIconView = SettingsAltIconView(
+	            mainOptions: self.mainOptions,
+	            app: self.getFilesForDownloadedApps(app: self.application as! DownloadedApps, getuuidonly: false)
+	        )
+	        let hostingcontroller = UIHostingController(rootView: settingsAltIconView)
+	
+	        if let sheet = hostingcontroller.sheetPresentationController {
+	            sheet.detents = [.medium()]
+	        }
+	
+	        self.present(hostingcontroller, animated: true, completion: nil)
+	    }
+	
+	    let documentPickerAction = UIAlertAction(
+	        title: NSLocalizedString("APP_SIGNING_VIEW_CONTROLLER_CELL_CHOOSE_FROM_FILES", comment: ""),
+	        style: .default
+	    ) { [weak self] _ in
+	        self?.presentDocumentPicker(fileExtension: [UTType.image])
+	    }
+	
+	    let photoLibraryAction = UIAlertAction(
+	        title: NSLocalizedString("APP_SIGNING_VIEW_CONTROLLER_CELL_CHOOSE_FROM_PHOTOS", comment: ""),
+	        style: .default
+	    ) { [weak self] _ in
+	        self?.presentPhotoLibrary(mediaTypes: ["public.image"])
+	    }
+	
+	    let cancelAction = UIAlertAction(
+	        title: NSLocalizedString("APP_SIGNING_VIEW_CONTROLLER_CELL_CANCEL", comment: ""),
+	        style: .cancel,
+	        handler: nil
+	    )
+	
+	    actionSheet.addAction(altIconAction)
+	    actionSheet.addAction(documentPickerAction)
+	    actionSheet.addAction(photoLibraryAction)
+	    actionSheet.addAction(cancelAction)
+	
+	    if let popoverController = actionSheet.popoverPresentationController {
+	        popoverController.sourceView = self.view
+	        popoverController.sourceRect = CGRect(
+	            x: self.view.bounds.midX,
+	            y: self.view.bounds.midY,
+	            width: 0,
+	            height: 0
+	        )
+	        popoverController.permittedArrowDirections = []
+	    }
+	
+	    self.present(actionSheet, animated: true, completion: nil)
 	}
 
 	// MARK: - Documents
