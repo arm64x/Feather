@@ -359,7 +359,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIOnboardingViewControlle
         if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String,
            let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
         {
-            return "App Version: \(version) (\(build))"
+            return "App Version: \(version) (\(build))\nPhiên bản Tiếng Việt được phát triển bởi: @hcsavn (bé Chou) & @arm64x (Lê Tí)"
         }
         return ""
     }
