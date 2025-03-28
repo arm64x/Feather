@@ -23,8 +23,8 @@ struct MainSigningOptions {
 	var uuid: String?
 	var removeInjectPaths: [String] = []
 	
-	let forceMinimumVersionString = ["Automatic", "15.0", "14.0", "13.0"]
-	let forceLightDarkAppearenceString = ["Automatic", "Light", "Dark"]
+	let forceMinimumVersionString = [String.localized("APP_SIGNING_VIEW_CONTROLLER_CELL_OPTION_AUTOMATIC"), "15.0", "14.0", "13.0"]
+	let forceLightDarkAppearenceString = [String.localized("APP_SIGNING_VIEW_CONTROLLER_CELL_OPTION_AUTOMATIC"), String.localized("APP_SIGNING_VIEW_CONTROLLER_CELL_OPTION_LIGHT"), String.localized("APP_SIGNING_VIEW_CONTROLLER_CELL_OPTION_DARK")]
 	
 	var certificate: Certificate?
 }
