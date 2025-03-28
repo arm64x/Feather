@@ -157,29 +157,29 @@ class AppDownload: NSObject {
 	    if let infoDict = bundle.infoDictionary {
 	        var iconURL = ""
 	        
-	        // First, try CFBundleIcons
+	        // First try CFBundleIcons
 	        if let iconsDict = infoDict["CFBundleIcons"] as? [String: Any],
 	           let primaryIconsDict = iconsDict["CFBundlePrimaryIcon"] as? [String: Any],
 	           let iconFiles = primaryIconsDict["CFBundleIconFiles"] as? [String],
 	           let iconFileName = iconFiles.first,
-	           let iconPath = bundle.path(forResource: iconFileName + "@2x", ofType: "png") {
-	            iconURL = "\(URL(string: iconPath)?.lastPathComponent ?? "")"
+	           let iconPath = bundle.path(forResource: iconFileName + "@2x", ofType: "png") ?? bundle.path(forResource: iconFileName, ofType: "png") {
+	            iconURL = URL(fileURLWithPath: iconPath).lastPathComponent
 	        }
-	        // If CFBundleIcons is not available, try CFBundleIconFiles
+	        // Fallback to CFBundleIconFiles if CFBundleIcons wasn't found or didn't yield a valid icon
 	        else if let iconFiles = infoDict["CFBundleIconFiles"] as? [String],
 	                let iconFileName = iconFiles.first,
-	                let iconPath = bundle.path(forResource: iconFileName + "@2x", ofType: "png") {
-	            iconURL = "\(URL(string: iconPath)?.lastPathComponent ?? "")"
+	                let iconPath = bundle.path(forResource: iconFileName + "@2x", ofType: "png") ?? bundle.path(forResource: iconFileName, ofType: "png") {
+	            iconURL = URL(fileURLWithPath: iconPath).lastPathComponent
 	        }
 	
 	        CoreDataManager.shared.addToDownloadedApps(
-	            version: (infoDict["CFBundleShortVersionString"] as? String)!,
-	            name: (infoDict["CFBundleDisplayName"] as? String ?? infoDict["CFBundleName"] as? String)!,
-	            bundleidentifier: (infoDict["CFBundleIdentifier"] as? String)!,
+	            version: (infoDict["CFBundleShortVersionString"] as? String) ?? "1.0",
+	            name: (infoDict["CFBundleDisplayName"] as? String ?? infoDict["CFBundleName"] as? String) ?? "Unknown",
+	            bundleidentifier: (infoDict["CFBundleIdentifier"] as? String) ?? "com.unknown",
 	            iconURL: iconURL,
 	            uuid: uuid,
-	            appPath: "\(URL(string: bundlePath)?.lastPathComponent ?? "")", 
-	            sourceLocation: sourceLocation) {_ in
+	            appPath: URL(fileURLWithPath: bundlePath).lastPathComponent,
+	            sourceLocation: sourceLocation) { _ in
 	        }
 	
 	        completion(nil)
