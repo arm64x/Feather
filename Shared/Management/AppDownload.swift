@@ -11,158 +11,258 @@ import ZIPFoundation
 import UIKit
 import CoreData
 
-@available(iOS 15.0, *)
 class AppDownload: NSObject {
-    private let downloadQueue = OperationQueue()
-    private let fileManager = FileManager.default
-    private var downloadTasks: [URLSessionDownloadTask: AppDownloadInfo] = [:]
-    
-    struct AppDownloadInfo {
-        let appUUID: String
-        let destinationURL: URL
-        let completion: (String?, String?, Error?) -> Void
+    let progress = Progress(totalUnitCount: 100)
+    weak var dldelegate: DownloadDelegate?
+    var downloads = [URLSessionDownloadTask: (uuid: String, appuuid: String, destinationUrl: URL, completion: (String?, String?, Error?) -> Void)]()
+    var DirectoryUUID: String?
+    var AppUUID: String?
+    private var downloadTask: URLSessionDownloadTask?
+    private var session: URLSession?
+
+    func downloadFile(url: URL, appuuid: String, completion: @escaping (String?, String?, Error?) -> Void) {
+        let uuid = UUID().uuidString
+        self.DirectoryUUID = uuid
+        self.AppUUID = appuuid
+        
+        guard let folderUrl = createUuidDirectory(uuid: uuid) else {
+            completion(nil, nil, NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to create directory"]))
+            return
+        }
+
+        let destinationUrl = folderUrl.appendingPathComponent(url.lastPathComponent)
+        let sessionConfig = URLSessionConfiguration.default
+        sessionConfig.timeoutIntervalForRequest = 30
+        sessionConfig.timeoutIntervalForResource = 300
+        
+        session = URLSession(configuration: sessionConfig, delegate: self, delegateQueue: .main)
+        downloadTask = session?.downloadTask(with: url)
+
+        downloads[downloadTask!] = (uuid: uuid, appuuid: appuuid, destinationUrl: destinationUrl, completion: completion)
+        downloadTask!.resume()
     }
     
-    private lazy var downloadSession: URLSession = {
-        let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 30
-        config.timeoutIntervalForResource = 300
-        return URLSession(configuration: config, delegate: self, delegateQueue: .main)
-    }()
-    
-    func downloadFile(url: URL, appUUID: String) async throws -> (String, URL) {
-        let uuid = UUID().uuidString
-        let destinationFolder = try createUuidDirectory(uuid: uuid)
-        let destinationURL = destinationFolder.appendingPathComponent(url.lastPathComponent)
+    func importFile(url: URL, uuid: String, completion: @escaping (URL?, Error?) -> Void) {
+        guard let folderUrl = createUuidDirectory(uuid: uuid) else {
+            completion(nil, NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to create directory"]))
+            return
+        }
         
-        return try await withCheckedThrowingContinuation { continuation in
-            let task = downloadSession.downloadTask(with: url) { [weak self] location, response, error in
-                guard let self = self, let location = location else {
-                    continuation.resume(throwing: error ?? URLError(.unknown))
+        let fileName = url.lastPathComponent
+        let destinationUrl = folderUrl.appendingPathComponent(fileName)
+        
+        do {
+            let fileManager = FileManager.default
+            try fileManager.moveItem(at: url, to: destinationUrl)
+            completion(destinationUrl, nil)
+        } catch {
+            completion(nil, error)
+        }
+    }
+
+    func cancelDownload() {
+        Debug.shared.log(message: "AppDownload.cancelDownload: User cancelled the download", type: .info)
+        downloadTask?.cancel()
+        session?.invalidateAndCancel()
+        downloadTask = nil
+        session = nil
+        progress.cancel()
+    }
+
+    func createUuidDirectory(uuid: String) -> URL? {
+        let baseFolder = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let folderUrl = baseFolder.appendingPathComponent("Apps/Unsigned").appendingPathComponent(uuid)
+
+        do {
+            try FileManager.default.createDirectory(at: folderUrl, withIntermediateDirectories: true, attributes: nil)
+            return folderUrl
+        } catch {
+            return nil
+        }
+    }
+    
+    func extractCompressedBundle(packageURL: String, completion: @escaping (String?, Error?) -> Void) {
+        let fileURL = URL(fileURLWithPath: packageURL)
+        let destinationURL = fileURL.deletingLastPathComponent()
+        let fileManager = FileManager.default
+        
+        guard fileManager.fileExists(atPath: fileURL.path) else {
+            completion(nil, NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "File does not exist"]))
+            return
+        }
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            let progress = Progress(totalUnitCount: 100)
+            let startTime = Date()
+            
+            do {
+                // Optimize: Use performant unzip with reduced I/O overhead
+                try fileManager.unzipItem(at: fileURL, to: destinationURL, progress: progress)
+                
+                print("⏱️ Unzip duration: \(Date().timeIntervalSince(startTime))s")
+                
+                guard !progress.isCancelled else {
+                    try? fileManager.removeItem(at: destinationURL)
+                    self.cancelDownload()
+                    DispatchQueue.main.async {
+                        completion(nil, NSError(domain: "", code: 1, userInfo: [NSLocalizedDescriptionKey: "Unzip operation was cancelled"]))
+                    }
                     return
                 }
                 
-                do {
-                    try self.fileManager.moveItem(at: location, to: destinationURL)
-                    continuation.resume(returning: (uuid, destinationURL))
-                } catch {
-                    continuation.resume(throwing: error)
+                // Optimize: Minimize file system operations
+                try fileManager.removeItem(at: fileURL)
+                
+                let payloadURL = destinationURL.appendingPathComponent("Payload")
+                let contents = try fileManager.contentsOfDirectory(at: payloadURL, includingPropertiesForKeys: nil, options: [])
+                
+                guard let appDirectory = contents.first(where: { $0.pathExtension == "app" }) else {
+                    DispatchQueue.main.async {
+                        completion(nil, NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No .app directory found in Payload"]))
+                    }
+                    return
+                }
+                
+                let targetURL = destinationURL.appendingPathComponent(appDirectory.lastPathComponent)
+                try fileManager.moveItem(at: appDirectory, to: targetURL)
+                try fileManager.removeItem(at: payloadURL)
+                
+                let codeSignatureDirectory = targetURL.appendingPathComponent("_CodeSignature")
+                if fileManager.fileExists(atPath: codeSignatureDirectory.path) {
+                    try fileManager.removeItem(at: codeSignatureDirectory)
+                    Debug.shared.log(message: "Removed _CodeSignature directory")
+                }
+                
+                DispatchQueue.main.async {
+                    completion(targetURL.path, nil)
+                }
+                
+            } catch {
+                Debug.shared.log(message: "❌ Unzip error: \(error.localizedDescription)")
+                try? fileManager.removeItem(at: destinationURL)
+                self.cancelDownload()
+                DispatchQueue.main.async {
+                    completion(nil, error)
                 }
             }
-            
-            task.resume()
         }
     }
+
+    func addToApps(bundlePath: String, uuid: String, sourceLocation: String? = nil, completion: @escaping (Error?) -> Void) {
+        guard let bundle = Bundle(path: bundlePath) else {
+            let error = NSError(domain: "Feather", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to load bundle at \(bundlePath)"])
+            completion(error)
+            return
+        }
     
-    func extractCompressedBundle(packageURL: String) async throws -> String {
-        let fileURL = URL(fileURLWithPath: packageURL)
-        let destinationURL = fileURL.deletingLastPathComponent()
-        
-        guard fileManager.fileExists(atPath: fileURL.path) else {
-            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "File does not exist"])
-        }
-        
-        let progress = Progress(totalUnitCount: 100)
-        let startTime = Date()
-        
-        try fileManager.unzipItem(at: fileURL, to: destinationURL, progress: progress)
-        
-        print("⏱️ Unzip duration: \(Date().timeIntervalSince(startTime))s")
-        
-        guard !progress.isCancelled else {
-            try? fileManager.removeItem(at: destinationURL)
-            throw NSError(domain: "", code: 1, userInfo: [NSLocalizedDescriptionKey: "Unzip operation was cancelled"])
-        }
-        
-        try fileManager.removeItem(at: fileURL)
-        
-        let payloadURL = destinationURL.appendingPathComponent("Payload")
-        let contents = try fileManager.contentsOfDirectory(at: payloadURL, includingPropertiesForKeys: nil)
-        
-        guard let appDirectory = contents.first(where: { $0.pathExtension == "app" }) else {
-            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No .app directory found in Payload"])
-        }
-        
-        let targetURL = destinationURL.appendingPathComponent(appDirectory.lastPathComponent)
-        try fileManager.moveItem(at: appDirectory, to: targetURL)
-        try fileManager.removeItem(at: payloadURL)
-        
-        let codeSignatureDirectory = targetURL.appendingPathComponent("_CodeSignature")
-        if fileManager.fileExists(atPath: codeSignatureDirectory.path) {
-            try fileManager.removeItem(at: codeSignatureDirectory)
-            Debug.shared.log(message: "Removed _CodeSignature directory")
-        }
-        
-        return targetURL.path
-    }
+        if let infoDict = bundle.infoDictionary {
+            var iconURL = ""
+            if let iconsDict = infoDict["CFBundleIcons"] as? [String: Any],
+               let primaryIconsDict = iconsDict["CFBundlePrimaryIcon"] as? [String: Any],
+               let iconFiles = primaryIconsDict["CFBundleIconFiles"] as? [String],
+               let iconFileName = iconFiles.first,
+               let iconPath = bundle.path(forResource: iconFileName + "@2x", ofType: "png") {
+                iconURL = "\(URL(string: iconPath)?.lastPathComponent ?? "")"
+            }
     
-    func addToApps(bundlePath: String, uuid: String, sourceLocation: String? = nil) async throws {
-        guard let bundle = Bundle(path: bundlePath),
-              let infoDict = bundle.infoDictionary else {
-            throw NSError(domain: "Feather", code: 3, userInfo: [NSLocalizedDescriptionKey: "Bundle or Info.plist not found"])
-        }
-        
-        let iconURL = extractIconURL(from: infoDict, in: bundle)
-        
-        guard let version = infoDict["CFBundleShortVersionString"] as? String,
-              let name = (infoDict["CFBundleDisplayName"] as? String) ?? (infoDict["CFBundleName"] as? String),
-              let bundleIdentifier = infoDict["CFBundleIdentifier"] as? String else {
-            throw NSError(domain: "Feather", code: 4, userInfo: [NSLocalizedDescriptionKey: "Missing required bundle info"])
-        }
-        
-        try await CoreDataManager.shared.addToDownloadedAppsAsync(
-            version: version,
-            name: name,
-            bundleidentifier: bundleIdentifier,
-            iconURL: iconURL,
-            uuid: uuid,
-            appPath: "\(URL(string: bundlePath)?.lastPathComponent ?? "")",
-            sourceLocation: sourceLocation
-        )
-    }
+            CoreDataManager.shared.addToDownloadedApps(
+                version: (infoDict["CFBundleShortVersionString"] as? String)!,
+                name: (infoDict["CFBundleDisplayName"] as? String ?? infoDict["CFBundleName"] as? String)!,
+                bundleidentifier: (infoDict["CFBundleIdentifier"] as? String)!,
+                iconURL: iconURL,
+                uuid: uuid,
+                appPath: "\(URL(string: bundlePath)?.lastPathComponent ?? "")", 
+                sourceLocation: sourceLocation) {_ in
+            }
     
-    private func extractIconURL(from infoDict: [String: Any], in bundle: Bundle) -> String {
-        if let iconsDict = infoDict["CFBundleIcons"] as? [String: Any],
-           let primaryIconsDict = iconsDict["CFBundlePrimaryIcon"] as? [String: Any],
-           let iconFiles = primaryIconsDict["CFBundleIconFiles"] as? [String],
-           let iconFileName = iconFiles.first,
-           let iconPath = bundle.path(forResource: iconFileName + "@2x", ofType: "png") {
-            return "\(URL(string: iconPath)?.lastPathComponent ?? "")"
+            completion(nil)
+        } else {
+            let error = NSError(domain: "Feather", code: 3, userInfo: [NSLocalizedDescriptionKey: "Info.plist not found in bundle at \(bundlePath)"])
+            completion(error)
         }
-        
-        if let iconFiles = infoDict["CFBundleIconFiles"] as? [String],
-           let iconFileName = iconFiles.first,
-           let iconPath = bundle.path(forResource: iconFileName + "@2x", ofType: "png") ??
-                           bundle.path(forResource: iconFileName, ofType: "png") {
-            return "\(URL(string: iconPath)?.lastPathComponent ?? "")"
-        }
-        
-        return ""
-    }
-    
-    func createUuidDirectory(uuid: String) throws -> URL {
-        let baseFolder = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let folderUrl = baseFolder.appendingPathComponent("Apps/Unsigned").appendingPathComponent(uuid)
-        
-        try fileManager.createDirectory(at: folderUrl, withIntermediateDirectories: true)
-        return folderUrl
     }
 }
 
-// Async/Await version of handleIPAFile
-@available(iOS 15.0, *)
-func handleIPAFile(destinationURL: URL, uuid: String, dl: AppDownload) async throws {
-    do {
-        let importedURL = try await dl.downloadFile(url: destinationURL, appUUID: uuid)
-        let extractedBundle = try await dl.extractCompressedBundle(packageURL: importedURL.1.path)
-        try await dl.addToApps(bundlePath: extractedBundle, uuid: uuid, sourceLocation: "Imported")
+extension AppDownload: URLSessionDownloadDelegate {
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        guard let download = downloads[downloadTask] else { return }
         
+        do {
+            try FileManager.default.moveItem(at: location, to: download.destinationUrl)
+            download.completion(download.uuid, download.destinationUrl.path, nil)
+        } catch {
+            download.completion(download.uuid, download.destinationUrl.path, error)
+        }
+        downloads.removeValue(forKey: downloadTask)
+    }
+
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        guard let download = downloads[task as! URLSessionDownloadTask] else { return }
+        
+        if let error = error {
+            download.completion(download.uuid, download.destinationUrl.path, error)
+        }
+        downloads.removeValue(forKey: task as! URLSessionDownloadTask)
+    }
+
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+        let progress = CGFloat(totalBytesWritten) / CGFloat(totalBytesExpectedToWrite)
+        if let uuid = downloads[downloadTask]?.appuuid {
+            dldelegate?.updateDownloadProgress(progress: progress, uuid: uuid)
+        }
+    }
+}
+
+enum HandleIPAFileError: Error {
+    case importFailed(String)
+    case extractionFailed(String)
+    case additionFailed(String)
+}
+
+func handleIPAFile(destinationURL: URL, uuid: String, dl: AppDownload) throws {
+    let group = DispatchGroup()
+    var functionError: Error? = nil
+    var targetBundle: String? = nil
+    
+    group.enter()
+    DispatchQueue.global(qos: .userInitiated).async {
+        dl.importFile(url: destinationURL, uuid: uuid) { resultUrl, error in
+            guard let validNewUrl = resultUrl, error == nil else {
+                functionError = error ?? HandleIPAFileError.importFailed("No URL returned from import.")
+                group.leave()
+                return
+            }
+            
+            dl.extractCompressedBundle(packageURL: validNewUrl.path) { bundle, error in
+                guard let validTargetBundle = bundle, error == nil else {
+                    functionError = error ?? HandleIPAFileError.extractionFailed("No bundle returned from extraction.")
+                    group.leave()
+                    return
+                }
+                
+                targetBundle = validTargetBundle
+                
+                dl.addToApps(bundlePath: validTargetBundle, uuid: uuid, sourceLocation: "Imported") { error in
+                    if let error = error {
+                        functionError = error
+                    }
+                    group.leave()
+                }
+            }
+        }
+    }
+    
+    group.wait()
+    
+    if let error = functionError {
+        DispatchQueue.main.async {
+            Debug.shared.log(message: error.localizedDescription, type: .error)
+        }
+        throw error
+    } else {
         DispatchQueue.main.async {
             Debug.shared.log(message: "Done!", type: .success)
             NotificationCenter.default.post(name: Notification.Name("lfetch"), object: nil)
         }
-    } catch {
-        Debug.shared.log(message: error.localizedDescription, type: .error)
-        throw error
     }
 }
