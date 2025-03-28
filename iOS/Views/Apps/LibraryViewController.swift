@@ -496,29 +496,48 @@ extension LibraryViewController {
 	}
 	
 	override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-		let source = getApplication(row: indexPath.row, section: indexPath.section)
-		
-		let deleteAction = UIContextualAction(style: .destructive, title: String.localized("DELETE")) { (action, view, completionHandler) in
-			switch indexPath.section {
-			case 0:
-				CoreDataManager.shared.deleteAllSignedAppContent(for: source! as! SignedApps)
-				self.signedApps?.remove(at: indexPath.row)
-				self.tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
-			case 1:
-				CoreDataManager.shared.deleteAllDownloadedAppContent(for: source! as! DownloadedApps)
-				self.downloadedApps?.remove(at: indexPath.row)
-				self.tableView.reloadSections(IndexSet(integer: 1), with: .automatic)
-			default:
-				break
-			}
-			completionHandler(true)
-		}
-		
-		deleteAction.backgroundColor = UIColor.red
-		let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
-		configuration.performsFirstActionWithFullSwipe = true
-
-		return configuration
+	        let source = getApplication(row: indexPath.row, section: indexPath.section)
+	        
+	        let deleteAction = UIContextualAction(style: .destructive, title: String.localized("DELETE")) { [weak self] (action, view, completionHandler) in
+	            guard let self = self else {
+	                completionHandler(false)
+	                return
+	            }
+	            
+	            // Thay đổi giao diện của action để hiển thị loading
+	            action.title = nil // Ẩn chữ "Xóa"
+	            action.image = UIImage(systemName: "gearshape.circle") // Icon loading tĩnh (có thể thay bằng icon khác)
+	            
+	            // Chạy xóa trên background thread để không block UI
+	            DispatchQueue.global(qos: .userInitiated).async {
+	                switch indexPath.section {
+	                case 0:
+	                    CoreDataManager.shared.deleteAllSignedAppContent(for: source! as! SignedApps)
+	                    DispatchQueue.main.async {
+	                        self.signedApps?.remove(at: indexPath.row)
+	                        self.tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
+	                        completionHandler(true)
+	                    }
+	                case 1:
+	                    CoreDataManager.shared.deleteAllDownloadedAppContent(for: source! as! DownloadedApps)
+	                    DispatchQueue.main.async {
+	                        self.downloadedApps?.remove(at: indexPath.row)
+	                        self.tableView.reloadSections(IndexSet(integer: 1), with: .automatic)
+	                        completionHandler(true)
+	                    }
+	                default:
+	                    DispatchQueue.main.async {
+	                        completionHandler(false)
+	                    }
+	                }
+	            }
+	        }
+	        
+	        deleteAction.backgroundColor = UIColor.red
+	        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+	        configuration.performsFirstActionWithFullSwipe = true
+	        
+	        return configuration
 	}
 	
 	override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
