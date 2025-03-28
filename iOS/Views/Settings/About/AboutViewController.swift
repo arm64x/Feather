@@ -38,7 +38,7 @@ class AboutViewController: FRSTableViewController {
 	}
 	
 	fileprivate func setupNavigation() {
-		self.title = "About"
+		self.title = String.localized("SETTINGS_VIEW_CONTROLLER_CELL_ABOUT", arguments: "Feather")
 		self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonTapped))
 	}
 	
@@ -125,7 +125,7 @@ extension AboutViewController {
 			let appName = Bundle.main.infoDictionary?["CFBundleName"] as? String ?? ""
 			let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
 			let buildVersion = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""
-			let versionString = "Version \(appVersion) (Build \(buildVersion))"
+			let versionString = String(format: NSLocalizedString("SETTINGS_VIEW_CONTROLLER_CELL_ABOUT_VERSION", comment: ""), appVersion, buildVersion)
 			cell.backgroundColor = .clear
 			cell.selectionStyle = .none
 			cell.configure(withTitle: appName, versionString: versionString)
