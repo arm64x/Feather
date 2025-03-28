@@ -51,9 +51,17 @@ class SigningsDylibViewController: UITableViewController {
 		self.tableView.delegate = self
 		tableView.register(UITableViewCell.self, forCellReuseIdentifier: "dylibCell")
 		
-		let alertController = UIAlertController(title: "ADVANCED USERS ONLY", message: "This section can make installed applications UNUSABLE and potentially UNSTABLE. USE THIS SECTION WITH CAUTION, IF YOU HAVE NO IDEA WHAT YOU'RE DOING, PLEASE LEAVE.\n\nIF YOU MAKE AN ISSUE ON THIS, IT WILL IMMEDIATELY BE CLOSED AND IGNORED.", preferredStyle: .alert)
-		
-		let continueAction = UIAlertAction(title: "WHO CARES", style: .destructive, handler: nil)
+		let alertController = UIAlertController(
+		    title: NSLocalizedString("APP_SIGNING_VIEW_CONTROLLER_CELL_ALERT_ADVANCED_USERS_ONLY_TITLE", comment: ""),
+		    message: NSLocalizedString("APP_SIGNING_VIEW_CONTROLLER_CELL_ALERT_ADVANCED_USERS_ONLY_MESSAGE", comment: ""),
+		    preferredStyle: .alert
+		)
+
+		let continueAction = UIAlertAction(
+		    title: NSLocalizedString("APP_SIGNING_VIEW_CONTROLLER_CELL_ALERT_ADVANCED_USERS_ONLY_WHO_CARES", comment: ""),
+		    style: .destructive,
+		    handler: nil
+		)
 		
 		alertController.addAction(continueAction)
 		
