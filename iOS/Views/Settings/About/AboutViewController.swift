@@ -151,7 +151,7 @@ extension AboutViewController {
 				return personCell
 			} else {
 				// Don't translate this
-				cell.textLabel?.text = "💙 This couldn't of been done without my sponsors!"
+				cell.textLabel?.text = String.localized("ABOUT_VIEW_CONTROLLER_SECTION_TITLE_THANKS")
 				cell.textLabel?.textColor = .secondaryLabel
 				cell.textLabel?.numberOfLines = 0
 				return cell
