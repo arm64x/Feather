@@ -237,7 +237,7 @@ enum HandleIPAFileError: Error {
     case additionFailed(String)
 }
 
-func handleIPAFile(destinationURL: URL, uuid: String, dl: AppDownload) throws {
+func handleIPAFile(destinationURL: URL, uuid: String, dl: AppDownload, completion: @escaping (Error?) -> Void) throws {
     let group = DispatchGroup()
     var functionError: Error? = nil
     var targetBundle: String? = nil
@@ -261,9 +261,7 @@ func handleIPAFile(destinationURL: URL, uuid: String, dl: AppDownload) throws {
                 targetBundle = validTargetBundle
                 
                 dl.addToApps(bundlePath: validTargetBundle, uuid: uuid, sourceLocation: "Imported") { error in
-                    if let error = error {
-                        functionError = error
-                    }
+                    functionError = error
                     group.leave()
                 }
             }
@@ -275,12 +273,14 @@ func handleIPAFile(destinationURL: URL, uuid: String, dl: AppDownload) throws {
     if let error = functionError {
         DispatchQueue.main.async {
             Debug.shared.log(message: error.localizedDescription, type: .error)
+            completion(error)
         }
         throw error
     } else {
         DispatchQueue.main.async {
             Debug.shared.log(message: "Done!", type: .success)
             NotificationCenter.default.post(name: Notification.Name("lfetch"), object: nil)
+            completion(nil)  // Quan trọng: Gọi completion để báo import thành công
         }
     }
 }
