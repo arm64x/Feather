@@ -82,8 +82,16 @@ class LibraryViewController: UITableViewController {
 	}
 	
 	fileprivate func setupNavigation() {
-		self.navigationController?.navigationBar.prefersLargeTitles = true
-		self.title = String.localized("TAB_LIBRARY")
+	    self.navigationController?.navigationBar.prefersLargeTitles = true
+	    self.title = String.localized("TAB_LIBRARY")
+	    
+	    let importButton = UIBarButtonItem(
+	        title: String.localized("LIBRARY_VIEW_CONTROLLER_SECTION_BUTTON_IMPORT"),
+	        style: .plain,
+	        target: self,
+	        action: #selector(startImporting)
+	    )
+	    self.navigationItem.rightBarButtonItem = importButton
 	}
 	
 	private func handleAppUpdate(for signedApp: SignedApps) {
