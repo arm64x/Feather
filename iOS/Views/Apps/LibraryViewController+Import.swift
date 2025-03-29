@@ -60,7 +60,7 @@ extension LibraryViewController: UIDocumentPickerDelegate {
 			textField.addTarget(self, action: #selector(self.textURLDidChange(_:)), for: .editingChanged)
 		}
 
-		let setAction = UIAlertAction(title: String.localized("LIBRARY_VIEW_CONTROLLER_IMPORTED_FROM_FILE"), style: .default) { _ in
+		let setAction = UIAlertAction(title: String.localized("IMPORT"), style: .default) { _ in
 			guard let textField = alert.textFields?.first, let enteredURL = textField.text else { return }
 			self.startDownloadIfNeeded(downloadURL: URL(string: enteredURL), sourceLocation: String.localized("LIBRARY_VIEW_CONTROLLER_IMPORTED_FROM_URL"))
 //			Preferences.onlinePath = enteredURL
@@ -76,7 +76,7 @@ extension LibraryViewController: UIDocumentPickerDelegate {
 
 
 	@objc func textURLDidChange(_ textField: UITextField) {
-		guard let alertController = presentedViewController as? UIAlertController, let setAction = alertController.actions.first(where: { $0.title == String.localized("IMPORT") }) else { return }
+		guard let alertController = presentedViewController as? UIAlertController, let setAction = alertController.actions.first(where: { $0.title == String.localized("LIBRARY_VIEW_CONTROLLER_IMPORTED_FROM_FILE") }) else { return }
 
 		let enteredURL = textField.text ?? ""
 		setAction.isEnabled = isValidURL(enteredURL)
