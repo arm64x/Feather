@@ -452,6 +452,7 @@ bool ZArchO::BuildCodeSignature(ZSignAsset *pSignAsset, bool bForce, const strin
 						   strEntitlementsSlotSHA1,
 						   strDerEntitlementsSlotSHA1,
 						   IsExecute(),
+						   pSignAsset->m_bAdhoc,
 						   strCodeDirectorySlot);
 	SlotBuildCodeDirectory(true,
 						   m_pBase,
@@ -468,6 +469,7 @@ bool ZArchO::BuildCodeSignature(ZSignAsset *pSignAsset, bool bForce, const strin
 						   strEntitlementsSlotSHA256,
 						   strDerEntitlementsSlotSHA256,
 						   IsExecute(),
+						   pSignAsset->m_bAdhoc,
 						   strAltnateCodeDirectorySlot);
 	if (pSignAsset->m_bSHA256Only) {
 		// SHA256-based code directory is usually the alternate; however, make it the primary (and only)
