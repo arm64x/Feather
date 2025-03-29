@@ -196,7 +196,8 @@
 "APP_SIGNING_VIEW_CONTROLLER_CELL_CHOOSE_FROM_FILES" = "Chọn từ Tệp";
 "APP_SIGNING_VIEW_CONTROLLER_CELL_CHOOSE_FROM_PHOTOS" = "Chọn từ Ảnh";
 "APP_SIGNING_VIEW_CONTROLLER_CELL_NAV_TITLE_ALT_ICONS" = "Icon thay thế";
-
+"APP_SIGNING_VIEW_CONTROLLER_CELL_NO_ALT_ICONS_AVAILABLE" = "Ứng dụng này không có icon thay thế";
+"APP_SIGNING_VIEW_CONTROLLER_CELL_USE_FILE_OR_IMAGE" = "Vui lòng sử dụng chức năng Chọn từ Tệp hoặc Chọn từ Ảnh";
 
 // MARK: - AppSigningViewController - No Certificates Alert
 "APP_SIGNING_VIEW_CONTROLLER_NO_CERTS_ALERT_TITLE" = "Lỗi";
