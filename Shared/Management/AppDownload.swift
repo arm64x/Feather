@@ -160,18 +160,13 @@ class AppDownload: NSObject {
 		if let iconsDict = infoDict["CFBundleIcons"] as? [String: Any],
 		   let primaryIconsDict = iconsDict["CFBundlePrimaryIcon"] as? [String: Any],
 		   let iconFiles = primaryIconsDict["CFBundleIconFiles"] as? [String],
-		   let iconFileName = iconFiles.first,
-		   let iconPath = bundle.path(forResource: iconFileName + "@2x", ofType: "png") {
-		    iconURL = URL(fileURLWithPath: iconPath).lastPathComponent
+		   let iconFileName = iconFiles.first {
+		    iconURL = iconFileName
 		}
 		// If CFBundleIcons is not available, try CFBundleIconFiles
 		else if let iconFiles = infoDict["CFBundleIconFiles"] as? [String],
 		        let iconFileName = iconFiles.first {
-		    if let iconPath = bundle.path(forResource: iconFileName + "@2x", ofType: "png") {
-		        iconURL = URL(fileURLWithPath: iconPath).lastPathComponent
-		    } else if let iconPath = bundle.path(forResource: iconFileName, ofType: "png") {
-		        iconURL = URL(fileURLWithPath: iconPath).lastPathComponent
-		    }
+		    iconURL = iconFileName
 		}
 
     
