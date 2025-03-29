@@ -37,6 +37,7 @@ public:
 	uint8_t *m_pCodeSignSegment;
 	uint8_t *m_pLinkEditSegment;
 	uint32_t m_uLoadCommandsFreeSpace;
+	uint32_t m_uFileType;
 	mach_header *m_pHeader;
 	uint32_t m_uHeaderSize;
 };
