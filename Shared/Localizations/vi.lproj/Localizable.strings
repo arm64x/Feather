@@ -15,6 +15,7 @@
 "COPY" = "Sao chép";
 // Delete item
 "DELETE" = "Xóa";
+"DELETING" = "Đang xóa";
 // Cancel alert action
 "CANCEL" = "Hủy bỏ";
 // Done action
