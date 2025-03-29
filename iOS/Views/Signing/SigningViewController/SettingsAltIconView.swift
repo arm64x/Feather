@@ -50,10 +50,10 @@ struct SettingsAltIconView: View {
 				}
 				.padding()
 			}
-			.navigationTitle("Alt Icons")
+			.navigationTitle(NSLocalizedString("APP_SIGNING_VIEW_CONTROLLER_CELL_NAV_TITLE_ALT_ICONS", comment: ""))
 			.navigationBarTitleDisplayMode(.inline)
 			.toolbar {
-				Button("Close") { dismiss() }
+			    Button(NSLocalizedString("CLOSE", comment: "")) { dismiss() }
 			}
 		}
 	}
