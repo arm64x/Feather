@@ -15,6 +15,7 @@
 "COPY" = "Copy";
 // Delete item
 "DELETE" = "Delete";
+"DELETING" = "Deleting";
 // Cancel alert action
 "CANCEL" = "Cancel";
 // Done action
