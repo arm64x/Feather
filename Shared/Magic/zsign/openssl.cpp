@@ -653,7 +653,7 @@ ZSignAsset::ZSignAsset()
 	m_bAdhoc = false;
 }
 
-bool ZSignAsset::Init(const string &strSignerCertFile, const string &strSignerPKeyFile, const string &strProvisionFile, const string &strEntitlementsFile, const string &strPassword)
+bool ZSignAsset::Init(const string &strSignerCertFile, const string &strSignerPKeyFile, const string &strProvisionFile, const string &strEntitlementsFile, const string &strPassword, bool bAdhoc)
 {
 	m_bAdhoc = bAdhoc;
 
