@@ -496,29 +496,83 @@ extension LibraryViewController {
 	}
 	
 	override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-		let source = getApplication(row: indexPath.row, section: indexPath.section)
-		
-		let deleteAction = UIContextualAction(style: .destructive, title: String.localized("DELETE")) { (action, view, completionHandler) in
-			switch indexPath.section {
-			case 0:
-				CoreDataManager.shared.deleteAllSignedAppContent(for: source! as! SignedApps)
-				self.signedApps?.remove(at: indexPath.row)
-				self.tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
-			case 1:
-				CoreDataManager.shared.deleteAllDownloadedAppContent(for: source! as! DownloadedApps)
-				self.downloadedApps?.remove(at: indexPath.row)
-				self.tableView.reloadSections(IndexSet(integer: 1), with: .automatic)
-			default:
-				break
-			}
-			completionHandler(true)
-		}
-		
-		deleteAction.backgroundColor = UIColor.red
-		let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
-		configuration.performsFirstActionWithFullSwipe = true
-
-		return configuration
+	    let source = getApplication(row: indexPath.row, section: indexPath.section)
+	    
+	    let deleteAction = UIContextualAction(style: .destructive, title: String.localized("DELETE")) { [weak self] (action, view, completionHandler) in
+	        guard let self = self else { return }
+	        
+	        // Tạo và hiển thị activity indicator
+	        let activityIndicator = UIActivityIndicatorView(style: .medium)
+	        activityIndicator.color = .white
+	        activityIndicator.startAnimating()
+	        
+	        // Tạo label cho loading text
+	        let loadingLabel = UILabel()
+	        loadingLabel.text = String.localized("DELETING")
+	        loadingLabel.textColor = .white
+	        loadingLabel.font = UIFont.systemFont(ofSize: 14)
+	        
+	        // Tạo container view
+	        let containerView = UIStackView(arrangedSubviews: [activityIndicator, loadingLabel])
+	        containerView.axis = .horizontal
+	        containerView.spacing = 8
+	        containerView.alignment = .center
+	        containerView.translatesAutoresizingMaskIntoConstraints = false
+	        
+	        // Xóa nội dung hiện tại của cell's content view
+	        let cell = tableView.cellForRow(at: indexPath)
+	        cell?.contentView.subviews.forEach { $0.isHidden = true }
+	        
+	        // Thêm container view vào cell
+	        cell?.contentView.addSubview(containerView)
+	        
+	        // Setup constraints
+	        NSLayoutConstraint.activate([
+	            containerView.centerXAnchor.constraint(equalTo: cell!.contentView.centerXAnchor),
+	            containerView.centerYAnchor.constraint(equalTo: cell!.contentView.centerYAnchor)
+	        ])
+	        
+	        // Disable user interaction để ngăn các hành động khác
+	        tableView.isUserInteractionEnabled = false
+	        
+	        // Thực hiện xóa trong background
+	        DispatchQueue.global(qos: .userInitiated).async {
+	            switch indexPath.section {
+	            case 0:
+	                CoreDataManager.shared.deleteAllSignedAppContent(for: source! as! SignedApps)
+	                
+	                // Trở về main queue để cập nhật UI
+	                DispatchQueue.main.async {
+	                    self.signedApps?.remove(at: indexPath.row)
+	                    tableView.isUserInteractionEnabled = true
+	                    self.tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
+	                    completionHandler(true)
+	                }
+	                
+	            case 1:
+	                CoreDataManager.shared.deleteAllDownloadedAppContent(for: source! as! DownloadedApps)
+	                
+	                // Trở về main queue để cập nhật UI
+	                DispatchQueue.main.async {
+	                    self.downloadedApps?.remove(at: indexPath.row)
+	                    tableView.isUserInteractionEnabled = true
+	                    self.tableView.reloadSections(IndexSet(integer: 1), with: .automatic)
+	                    completionHandler(true)
+	                }
+	                
+	            default:
+	                DispatchQueue.main.async {
+	                    tableView.isUserInteractionEnabled = true
+	                    completionHandler(false)
+	                }
+	            }
+	        }
+	    }
+	    
+	    deleteAction.backgroundColor = UIColor.red
+	    let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+	    configuration.performsFirstActionWithFullSwipe = true
+	    return configuration
 	}
 	
 	override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
