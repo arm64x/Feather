@@ -82,29 +82,37 @@ class LibraryViewController: UITableViewController {
 	}
 	
 	fileprivate func setupNavigation() {
-	    // Thiết lập thanh điều hướng
-	    self.navigationController?.navigationBar.prefersLargeTitles = true
-	    self.title = String.localized("TAB_LIBRARY")
+	    // Bỏ prefersLargeTitles và tạo custom title view
+	    self.navigationController?.navigationBar.prefersLargeTitles = false
 	    
-	    // Đảm bảo tiêu đề lớn luôn hiển thị khi view controller này xuất hiện
-	    self.navigationItem.largeTitleDisplayMode = .always
+	    // Tạo custom title view với Title và Button nằm ngang hàng
+	    let titleView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width - 32, height: 44))
 	    
-	    // Tạo và cấu hình nút Import
-	    let importButton = UIBarButtonItem(
-	        title: String.localized("LIBRARY_VIEW_CONTROLLER_SECTION_BUTTON_IMPORT"),
-	        style: .plain,
-	        target: self,
-	        action: #selector(handleImportButton)
-	    )
+	    // Thêm Label cho tiêu đề
+	    let titleLabel = UILabel()
+	    titleLabel.text = String.localized("TAB_LIBRARY")
+	    titleLabel.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+	    titleView.addSubview(titleLabel)
+	    titleLabel.translatesAutoresizingMaskIntoConstraints = false
 	    
-	    // Chỉ định vị trí của nút ở góc phải
-	    self.navigationItem.rightBarButtonItem = importButton
+	    // Thêm Button Import
+	    let importButton = UIButton(type: .system)
+	    importButton.setTitle(String.localized("LIBRARY_VIEW_CONTROLLER_SECTION_BUTTON_IMPORT"), for: .normal)
+	    importButton.addTarget(self, action: #selector(handleImportButton), for: .touchUpInside)
+	    titleView.addSubview(importButton)
+	    importButton.translatesAutoresizingMaskIntoConstraints = false
 	    
-	    // Cấu hình thêm để điều chỉnh vị trí của nút trong chế độ large title
-	    navigationItem.scrollEdgeAppearance = UINavigationBarAppearance()
-	    navigationItem.scrollEdgeAppearance?.configureWithDefaultBackground()
-	    navigationItem.standardAppearance = UINavigationBarAppearance()
-	    navigationItem.standardAppearance?.configureWithDefaultBackground()
+	    // Thiết lập constraints để đảm bảo Label và Button ngang hàng
+	    NSLayoutConstraint.activate([
+	        titleLabel.leadingAnchor.constraint(equalTo: titleView.leadingAnchor),
+	        titleLabel.centerYAnchor.constraint(equalTo: titleView.centerYAnchor),
+	        
+	        importButton.trailingAnchor.constraint(equalTo: titleView.trailingAnchor),
+	        importButton.centerYAnchor.constraint(equalTo: titleView.centerYAnchor)
+	    ])
+	    
+	    // Gán titleView vào navigationItem
+	    self.navigationItem.titleView = titleView
 	}
 	
 	@objc private func handleImportButton() {
