@@ -62,7 +62,7 @@ extension LibraryViewController: UIDocumentPickerDelegate {
 
 		let setAction = UIAlertAction(title: String.localized("IMPORT"), style: .default) { _ in
 			guard let textField = alert.textFields?.first, let enteredURL = textField.text else { return }
-			self.startDownloadIfNeeded(downloadURL: URL(string: enteredURL), sourceLocation: String.localized("LIBRARY_VIEW_CONTROLLER_IMPORTED_FROM_URL"))
+			self.startDownloadIfNeeded(downloadURL: URL(string: enteredURL), sourceLocation: NSLocalizedString("LIBRARY_VIEW_CONTROLLER_IMPORTED_FROM_URL", comment: ""))
 //			Preferences.onlinePath = enteredURL
 		}
 
