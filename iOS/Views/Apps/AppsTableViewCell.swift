@@ -113,7 +113,9 @@ class AppsTableViewCell: UITableViewCell {
 				let components = calendar.dateComponents([.day], from: currentDate, to: timeToLive)
 				
 				let daysLeft = components.day ?? 0
-				let expirationText = daysLeft < 0 ? "Expired" : "\(daysLeft) days left"
+				let expirationText = daysLeft < 0 
+				    ? NSLocalizedString("CERTIFICATES_VIEW_CONTROLLER_CELL_EXPIRED", comment: "") 
+				    : String.localizedStringWithFormat(NSLocalizedString("CERTIFICATES_VIEW_CONTROLLER_CELL_DAYS_LEFT", comment: ""), daysLeft)
 				
 				let p1 = PillView(text: expirationText, backgroundColor: daysLeft < 0 ? .systemRed : .systemGreen, iconName: daysLeft < 0 ? "xmark" : "timer")
 				pillsStackView.addArrangedSubview(p1)
