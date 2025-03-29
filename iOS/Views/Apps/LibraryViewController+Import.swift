@@ -76,7 +76,7 @@ extension LibraryViewController: UIDocumentPickerDelegate {
 
 
 	@objc func textURLDidChange(_ textField: UITextField) {
-		guard let alertController = presentedViewController as? UIAlertController, let setAction = alertController.actions.first(where: { $0.title == String.localized("LIBRARY_VIEW_CONTROLLER_IMPORTED_FROM_FILE") }) else { return }
+		guard let alertController = presentedViewController as? UIAlertController, let setAction = alertController.actions.first(where: { $0.title == String.localized("IMPORT") }) else { return }
 
 		let enteredURL = textField.text ?? ""
 		setAction.isEnabled = isValidURL(enteredURL)
