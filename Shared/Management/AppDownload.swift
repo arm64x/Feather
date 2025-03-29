@@ -247,7 +247,7 @@ func handleIPAFile(destinationURL: URL, uuid: String, dl: AppDownload) throws {
                 
                 targetBundle = validTargetBundle
                 
-                dl.addToApps(bundlePath: validTargetBundle, uuid: uuid, sourceLocation: NSLocalizedString("IMPORT", comment: "")) { error in
+                dl.addToApps(bundlePath: validTargetBundle, uuid: uuid, sourceLocation: NSLocalizedString("LIBRARY_VIEW_CONTROLLER_IMPORTED_FROM_FILE", comment: "")) { error in
                     if let error = error {
                         functionError = error
                     }
