@@ -85,13 +85,21 @@ class LibraryViewController: UITableViewController {
 	    self.navigationController?.navigationBar.prefersLargeTitles = true
 	    self.title = String.localized("TAB_LIBRARY")
 	    
+	    // Tạo nút Import
 	    let importButton = UIBarButtonItem(
 	        title: String.localized("LIBRARY_VIEW_CONTROLLER_SECTION_BUTTON_IMPORT"),
 	        style: .plain,
 	        target: self,
-	        action: #selector(startImporting)
+	        action: #selector(handleImportButton)
 	    )
+	    
+	    // Thêm nút vào thanh điều hướng
 	    self.navigationItem.rightBarButtonItem = importButton
+	}
+	
+	// Thêm phương thức handler để gọi đến startImporting
+	@objc private func handleImportButton() {
+	    self.startImporting()
 	}
 	
 	private func handleAppUpdate(for signedApp: SignedApps) {
