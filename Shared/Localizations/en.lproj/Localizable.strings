@@ -196,6 +196,8 @@
 "APP_SIGNING_VIEW_CONTROLLER_CELL_CHOOSE_FROM_FILES" = "Choose from Files";
 "APP_SIGNING_VIEW_CONTROLLER_CELL_CHOOSE_FROM_PHOTOS" = "Choose from Photos";
 "APP_SIGNING_VIEW_CONTROLLER_CELL_NAV_TITLE_ALT_ICONS" = "Alt Icons";
+"APP_SIGNING_VIEW_CONTROLLER_CELL_NO_ALT_ICONS_AVAILABLE" = "This app doesn't have alternative icons";
+"APP_SIGNING_VIEW_CONTROLLER_CELL_USE_FILE_OR_IMAGE" = "Please use the 'Choose from File' or 'Choose from Photos' feature";
 
 
 // MARK: - AppSigningViewController - No Certificates Alert
