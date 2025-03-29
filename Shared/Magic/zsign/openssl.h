@@ -16,6 +16,7 @@ public:
 	bool Init(const string &strSignerCertFile, const string &strSignerPKeyFile, const string &strProvisionFile, const string &strEntitlementsFile, const string &strPassword);
 
 public:
+	bool m_bAdhoc;
 	string m_strTeamId;
 	string m_strSubjectCN;
 	string m_strProvisionData;
