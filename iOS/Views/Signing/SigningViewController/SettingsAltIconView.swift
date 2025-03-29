@@ -30,7 +30,7 @@ struct SettingsAltIconView: View {
                             .multilineTextAlignment(.center)
                             .padding(.top, 30)
                         
-                        Text(NSLocalizedString("APP_SIGNING_VIEW_CONTROLLER_CELL_USE_FILE_OR_IMAGE", comment: "))
+                        Text(NSLocalizedString("APP_SIGNING_VIEW_CONTROLLER_CELL_USE_FILE_OR_IMAGE", comment: ""))
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
