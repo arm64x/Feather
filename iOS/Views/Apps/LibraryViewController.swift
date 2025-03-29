@@ -246,18 +246,18 @@ extension LibraryViewController {
 		case 0:
 			let headerWithButton = GroupedSectionHeader(
                 title: String.localized("LIBRARY_VIEW_CONTROLLER_SECTION_TITLE_SIGNED_APPS"),
-				subtitle: String.localized("LIBRARY_VIEW_CONTROLLER_SECTION_TITLE_SIGNED_APPS_TOTAL", arguments: String(signedApps?.count ?? 0)),
-                buttonTitle: String.localized("LIBRARY_VIEW_CONTROLLER_SECTION_BUTTON_IMPORT"),
-                buttonAction: {
-				self.startImporting()
-			})
+				subtitle: String.localized("LIBRARY_VIEW_CONTROLLER_SECTION_TITLE_SIGNED_APPS_TOTAL", arguments: String(signedApps?.count ?? 0))
+			)
 			return headerWithButton
 		case 1:
 			
 			let headerWithButton = GroupedSectionHeader(
 				title: String.localized("LIBRARY_VIEW_CONTROLLER_SECTION_DOWNLOADED_APPS"),
-				subtitle: String.localized("LIBRARY_VIEW_CONTROLLER_SECTION_TITLE_DOWNLOADED_APPS_TOTAL", arguments: String(downloadedApps?.count ?? 0))
-			)
+				subtitle: String.localized("LIBRARY_VIEW_CONTROLLER_SECTION_TITLE_DOWNLOADED_APPS_TOTAL", arguments: String(downloadedApps?.count ?? 0)),
+				buttonTitle: String.localized("LIBRARY_VIEW_CONTROLLER_SECTION_BUTTON_IMPORT"),
+                		buttonAction: {
+				self.startImporting()
+			})
 			
 			return headerWithButton
 		default:
