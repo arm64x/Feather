@@ -164,6 +164,14 @@ class AppDownload: NSObject {
                let iconPath = bundle.path(forResource: iconFileName + "@2x", ofType: "png") {
                 iconURL = "\(URL(string: iconPath)?.lastPathComponent ?? "")"
             }
+            // If CFBundleIcons is not available, try CFBundleIconFiles
+ 	        else if let iconFiles = infoDict["CFBundleIconFiles"] as? [String],
+		        let iconFileName = iconFiles.first,
+		        let iconPath = bundle.path(forResource: iconFileName + "@2x", ofType: "png") ?? 
+		                       bundle.path(forResource: iconFileName, ofType: "png") {
+		        iconURL = "\(URL(string: iconPath)?.lastPathComponent ?? "")"
+		    }
+
     
             CoreDataManager.shared.addToDownloadedApps(
                 version: (infoDict["CFBundleShortVersionString"] as? String)!,
