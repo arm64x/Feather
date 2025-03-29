@@ -22,6 +22,7 @@
 "DONE" = "Xong";
 // Dismiss action
 "DISMISS" = "Bỏ qua";
+"CLOSE" = "Đóng";
 // Dismiss 2 action
 "LAME" = "OK";
 // Save action
