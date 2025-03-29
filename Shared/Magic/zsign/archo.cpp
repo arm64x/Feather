@@ -14,7 +14,6 @@ ZArchO::ZArchO()
 	m_uSignLength = 0;
 	m_pHeader = NULL;
 	m_uHeaderSize = 0;
-	m_uFileType = 0;
 	m_bEncrypted = false;
 	m_b64 = false;
 	m_bBigEndian = false;
@@ -40,7 +39,6 @@ bool ZArchO::Init(uint8_t *pBase, uint32_t uLength)
 		return false;
 	}
 
-	m_uFileType = BO(m_pHeader->filetype);
 	m_b64 = (MH_MAGIC_64 == m_pHeader->magic || MH_CIGAM_64 == m_pHeader->magic) ? true : false;
 	m_bBigEndian = (MH_CIGAM == m_pHeader->magic || MH_CIGAM_64 == m_pHeader->magic) ? true : false;
 	m_uHeaderSize = m_b64 ? sizeof(mach_header_64) : sizeof(mach_header);
@@ -423,18 +421,13 @@ bool ZArchO::BuildCodeSignature(ZSignAsset *pSignAsset, bool bForce, const strin
 	}
 
 	uint64_t execSegFlags = 0;
-	if (MH_EXECUTE == m_uFileType) {
-		if (pSignAsset->m_bAdhoc || pSignAsset->m_bSingleBinary) {
-			uExecSegFlags = CS_EXECSEG_MAIN_BINARY;
-		}
-	}
-	
 	if (NULL != strstr(strEntitlementsSlot.data() + 8, "<key>get-task-allow</key>"))
 	{
 		// TODO: Check if get-task-allow is actually set to true
 		execSegFlags = CS_EXECSEG_MAIN_BINARY | CS_EXECSEG_ALLOW_UNSIGNED;
 	}
 
+	string strCMSSignatureSlot;
 	string strCodeDirectorySlot;
 	string strAltnateCodeDirectorySlot;
 	SlotBuildCodeDirectory(false,
@@ -452,7 +445,6 @@ bool ZArchO::BuildCodeSignature(ZSignAsset *pSignAsset, bool bForce, const strin
 						   strEntitlementsSlotSHA1,
 						   strDerEntitlementsSlotSHA1,
 						   IsExecute(),
-						   pSignAsset->m_bAdhoc,
 						   strCodeDirectorySlot);
 	SlotBuildCodeDirectory(true,
 						   m_pBase,
@@ -469,17 +461,11 @@ bool ZArchO::BuildCodeSignature(ZSignAsset *pSignAsset, bool bForce, const strin
 						   strEntitlementsSlotSHA256,
 						   strDerEntitlementsSlotSHA256,
 						   IsExecute(),
-						   pSignAsset->m_bAdhoc,
 						   strAltnateCodeDirectorySlot);
-	if (pSignAsset->m_bSHA256Only) {
-		// SHA256-based code directory is usually the alternate; however, make it the primary (and only)
-		// code directory if `m_bUseSHA256Only == true`.
-		strAltnateCodeDirectorySlot.swap(strCodeDirectorySlot);
-	}
-	string strCMSSignatureSlot;
-	if (!pSignAsset->m_bAdhoc) { //adhoc remove cms signature slot
-		SlotBuildCMSSignature(pSignAsset, strCodeDirectorySlot, strAltnateCodeDirectorySlot, strCMSSignatureSlot);
-	}
+	SlotBuildCMSSignature(pSignAsset,
+						  strCodeDirectorySlot,
+						  strAltnateCodeDirectorySlot,
+						  strCMSSignatureSlot);
 
 	uint32_t uCodeDirectorySlotLength = (uint32_t)strCodeDirectorySlot.size();
 	uint32_t uRequirementsSlotLength = (uint32_t)strRequirementsSlot.size();

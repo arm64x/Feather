@@ -717,11 +717,6 @@ bool SlotBuildCMSSignature(ZSignAsset *pSignAsset,
 						   string &strOutput)
 {
 	strOutput.clear();
-	if (pSignAsset->m_bAdhoc) { // The empty CSSLOT_SIGNATURESLOT
-		uint8_t ldid[] = { 0xfa, 0xde, 0x0b, 0x01, 0x00, 0x00, 0x00, 0x08 };
-		strOutput.append((const char*)ldid, sizeof(ldid));
-		return true;
-	}
 
 	JValue jvHashes;
 	string strCDHashesPlist;
