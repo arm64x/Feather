@@ -156,34 +156,36 @@ class AppDownload: NSObject {
         }
     
         if let infoDict = bundle.infoDictionary {
-            var iconURL = ""
-            if let iconsDict = infoDict["CFBundleIcons"] as? [String: Any],
-               let primaryIconsDict = iconsDict["CFBundlePrimaryIcon"] as? [String: Any],
-               let iconFiles = primaryIconsDict["CFBundleIconFiles"] as? [String],
-               let iconFileName = iconFiles.first,
-               let iconPath = bundle.path(forResource: iconFileName + "@2x", ofType: "png") {
-                iconURL = "\(URL(string: iconPath)?.lastPathComponent ?? "")"
-            }
-            // If CFBundleIcons is not available, try CFBundleIconFiles
- 	        else if let iconFiles = infoDict["CFBundleIconFiles"] as? [String],
-		        let iconFileName = iconFiles.first,
-		        let iconPath = bundle.path(forResource: iconFileName + "@2x", ofType: "png") ?? 
-		                       bundle.path(forResource: iconFileName, ofType: "png") {
-		        iconURL = "\(URL(string: iconPath)?.lastPathComponent ?? "")"
+		var iconURL = ""
+		if let iconsDict = infoDict["CFBundleIcons"] as? [String: Any],
+		   let primaryIconsDict = iconsDict["CFBundlePrimaryIcon"] as? [String: Any],
+		   let iconFiles = primaryIconsDict["CFBundleIconFiles"] as? [String],
+		   let iconFileName = iconFiles.first,
+		   let iconPath = bundle.path(forResource: iconFileName + "@2x", ofType: "png") {
+		    iconURL = URL(fileURLWithPath: iconPath).lastPathComponent
+		}
+		// If CFBundleIcons is not available, try CFBundleIconFiles
+		else if let iconFiles = infoDict["CFBundleIconFiles"] as? [String],
+		        let iconFileName = iconFiles.first {
+		    if let iconPath = bundle.path(forResource: iconFileName + "@2x", ofType: "png") {
+		        iconURL = URL(fileURLWithPath: iconPath).lastPathComponent
+		    } else if let iconPath = bundle.path(forResource: iconFileName, ofType: "png") {
+		        iconURL = URL(fileURLWithPath: iconPath).lastPathComponent
 		    }
+		}
 
     
-            CoreDataManager.shared.addToDownloadedApps(
-                version: (infoDict["CFBundleShortVersionString"] as? String)!,
-                name: (infoDict["CFBundleDisplayName"] as? String ?? infoDict["CFBundleName"] as? String)!,
-                bundleidentifier: (infoDict["CFBundleIdentifier"] as? String)!,
-                iconURL: iconURL,
-                uuid: uuid,
-                appPath: "\(URL(string: bundlePath)?.lastPathComponent ?? "")", 
-                sourceLocation: sourceLocation) {_ in
-            }
+		CoreDataManager.shared.addToDownloadedApps(
+			version: (infoDict["CFBundleShortVersionString"] as? String)!,
+			name: (infoDict["CFBundleDisplayName"] as? String ?? infoDict["CFBundleName"] as? String)!,
+			bundleidentifier: (infoDict["CFBundleIdentifier"] as? String)!,
+			iconURL: iconURL,
+			uuid: uuid,
+			appPath: "\(URL(string: bundlePath)?.lastPathComponent ?? "")", 
+			sourceLocation: sourceLocation) {_ in
+		}
     
-            completion(nil)
+		completion(nil)
         } else {
             let error = NSError(domain: "Feather", code: 3, userInfo: [NSLocalizedDescriptionKey: "Info.plist not found in bundle at \(bundlePath)"])
             completion(error)
