@@ -82,41 +82,8 @@ class LibraryViewController: UITableViewController {
 	}
 	
 	fileprivate func setupNavigation() {
-	    // Bỏ prefersLargeTitles và tạo custom title view
-	    self.navigationController?.navigationBar.prefersLargeTitles = false
-	    
-	    // Tạo custom title view với Title và Button nằm ngang hàng
-	    let titleView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width - 32, height: 44))
-	    
-	    // Thêm Label cho tiêu đề
-	    let titleLabel = UILabel()
-	    titleLabel.text = String.localized("TAB_LIBRARY")
-	    titleLabel.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
-	    titleView.addSubview(titleLabel)
-	    titleLabel.translatesAutoresizingMaskIntoConstraints = false
-	    
-	    // Thêm Button Import
-	    let importButton = UIButton(type: .system)
-	    importButton.setTitle(String.localized("LIBRARY_VIEW_CONTROLLER_SECTION_BUTTON_IMPORT"), for: .normal)
-	    importButton.addTarget(self, action: #selector(handleImportButton), for: .touchUpInside)
-	    titleView.addSubview(importButton)
-	    importButton.translatesAutoresizingMaskIntoConstraints = false
-	    
-	    // Thiết lập constraints để đảm bảo Label và Button ngang hàng
-	    NSLayoutConstraint.activate([
-	        titleLabel.leadingAnchor.constraint(equalTo: titleView.leadingAnchor),
-	        titleLabel.centerYAnchor.constraint(equalTo: titleView.centerYAnchor),
-	        
-	        importButton.trailingAnchor.constraint(equalTo: titleView.trailingAnchor),
-	        importButton.centerYAnchor.constraint(equalTo: titleView.centerYAnchor)
-	    ])
-	    
-	    // Gán titleView vào navigationItem
-	    self.navigationItem.titleView = titleView
-	}
-	
-	@objc private func handleImportButton() {
-	    self.startImporting()
+		self.navigationController?.navigationBar.prefersLargeTitles = true
+		self.title = String.localized("TAB_LIBRARY")
 	}
 	
 	private func handleAppUpdate(for signedApp: SignedApps) {
