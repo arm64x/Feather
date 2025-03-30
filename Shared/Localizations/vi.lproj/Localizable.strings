@@ -295,7 +295,7 @@
 "LIBRARY_VIEW_CONTROLLER_SIGN_ACTION_VIEW_DATEILS" = "Xem chi tiết";
 "LIBRARY_VIEW_CONTROLLER_SIGN_ACTION_OPEN_LN_FILES" = "Mở trong Tệp";
 "LIBRARY_VIEW_CONTROLLER_SIGN_ACTION_INSTALL_CONFIRM" = "Xác nhận cài đặt";
-"LIBRARY_VIEW_CONTROLLER_SIGN_ACTION_INSTALL_CONFIRM_DESCRIPTION" = "Việc cài đặt từ mục Ứng dụng đã tải xuống có thể không thành công nếu ứng dụng chưa được ký. Bạn nên ký ứng dụng trước khi cài đặt.";
+"LIBRARY_VIEW_CONTROLLER_SIGN_ACTION_INSTALL_CONFIRM_DESCRIPTION" = "Việc cài đặt từ mục Ứng dụng đã nhập có thể không thành công nếu ứng dụng chưa được ký. Bạn nên ký ứng dụng trước khi cài đặt.";
 
 // MARK: - SettingsViewController
 // Headers
