@@ -23,6 +23,13 @@ class LibraryViewController: UITableViewController {
 	var popupVC: PopupViewController!
 	var loaderAlert: UIAlertController?
 	
+	// Multi-Select Delete Properties
+	var isMultiSelectMode = false
+	var selectedApps: [NSManagedObject] = []
+	var multiSelectBarButton: UIBarButtonItem!
+	var deleteBarButton: UIBarButtonItem!
+	var cancelBarButton: UIBarButtonItem!
+	
 	init() { super.init(style: .grouped) }
 	required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 	
@@ -30,6 +37,7 @@ class LibraryViewController: UITableViewController {
 		super.viewDidLoad()
 		setupViews()
 		setupSearchController()
+		setupMultiSelectButtons()
 		fetchSources()
 		loaderAlert = presentLoader()
 	}
@@ -50,6 +58,95 @@ class LibraryViewController: UITableViewController {
 			name: Notification.Name("InstallDownloadedApp"),
 			object: nil
 		)
+	}
+	
+	fileprivate func setupMultiSelectButtons() {
+		// Setup the multi-select button
+		multiSelectBarButton = UIBarButtonItem(
+			image: UIImage(systemName: "checkmark.circle"),
+			style: .plain,
+			target: self,
+			action: #selector(toggleMultiSelectMode)
+		)
+		
+		// Setup the delete button (hidden initially)
+		deleteBarButton = UIBarButtonItem(
+			barButtonSystemItem: .trash,
+			target: self,
+			action: #selector(deleteSelectedApps)
+		)
+		deleteBarButton.isEnabled = false
+		
+		// Setup the cancel button (hidden initially)
+		cancelBarButton = UIBarButtonItem(
+			barButtonSystemItem: .cancel, 
+			target: self,
+			action: #selector(toggleMultiSelectMode)
+		)
+	}
+	
+	@objc private func toggleMultiSelectMode() {
+		isMultiSelectMode.toggle()
+		selectedApps.removeAll()
+		
+		if isMultiSelectMode {
+			// Enter multi-select mode
+			navigationItem.rightBarButtonItems = [cancelBarButton, deleteBarButton]
+			navigationItem.title = String.localized("SELECT_ITEMS")
+			searchController.searchBar.isUserInteractionEnabled = false
+			searchController.searchBar.alpha = 0.5
+		} else {
+			// Exit multi-select mode
+			setupNavigation() // Restore normal navigation
+			searchController.searchBar.isUserInteractionEnabled = true
+			searchController.searchBar.alpha = 1.0
+		}
+		
+		// Update delete button state
+		updateDeleteButtonState()
+		
+		// Reload table to show/hide checkboxes
+		tableView.reloadData()
+	}
+	
+	@objc private func deleteSelectedApps() {
+		guard !selectedApps.isEmpty else { return }
+		
+		let alert = UIAlertController(
+			title: String.localized("CONFIRM_DELETE"),
+			message: String.localized("DELETE_MULTIPLE_ITEMS_CONFIRMATION", arguments: String(selectedApps.count)),
+			preferredStyle: .alert
+		)
+		
+		alert.addAction(UIAlertAction(title: String.localized("CANCEL"), style: .cancel))
+		alert.addAction(UIAlertAction(title: String.localized("DELETE"), style: .destructive) { [weak self] _ in
+			guard let self = self else { return }
+			
+			for app in self.selectedApps {
+				if let signedApp = app as? SignedApps {
+					CoreDataManager.shared.deleteAllSignedAppContent(for: signedApp)
+					if let index = self.signedApps?.firstIndex(of: signedApp) {
+						self.signedApps?.remove(at: index)
+					}
+				} else if let downloadedApp = app as? DownloadedApps {
+					CoreDataManager.shared.deleteAllDownloadedAppContent(for: downloadedApp)
+					if let index = self.downloadedApps?.firstIndex(of: downloadedApp) {
+						self.downloadedApps?.remove(at: index)
+					}
+				}
+			}
+			
+			// Exit multi-select mode and refresh
+			self.selectedApps.removeAll()
+			self.toggleMultiSelectMode()
+			self.tableView.reloadData()
+		})
+		
+		present(alert, animated: true)
+	}
+	
+	private func updateDeleteButtonState() {
+		deleteBarButton.isEnabled = !selectedApps.isEmpty
 	}
 	
 	@objc private func handleInstallNotification(_ notification: Notification) {
@@ -84,6 +181,9 @@ class LibraryViewController: UITableViewController {
 	fileprivate func setupNavigation() {
 		self.navigationController?.navigationBar.prefersLargeTitles = true
 		self.title = String.localized("TAB_LIBRARY")
+		
+		// Set up right bar button items
+		navigationItem.rightBarButtonItems = [multiSelectBarButton]
 	}
 	
 	private func handleAppUpdate(for signedApp: SignedApps) {
@@ -247,7 +347,7 @@ extension LibraryViewController {
 			let headerWithButton = GroupedSectionHeader(
                 title: String.localized("LIBRARY_VIEW_CONTROLLER_SECTION_TITLE_SIGNED_APPS"),
 				subtitle: String.localized("LIBRARY_VIEW_CONTROLLER_SECTION_TITLE_SIGNED_APPS_TOTAL", arguments: String(signedApps?.count ?? 0)),
-                buttonTitle: String.localized("LIBRARY_VIEW_CONTROLLER_SECTION_BUTTON_IMPORT"),
+                buttonTitle: isMultiSelectMode ? nil : String.localized("LIBRARY_VIEW_CONTROLLER_SECTION_BUTTON_IMPORT"),
                 buttonAction: {
 				self.startImporting()
 			})
@@ -267,12 +367,22 @@ extension LibraryViewController {
 	
 	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		let cell = AppsTableViewCell(style: .subtitle, reuseIdentifier: "RoundedBackgroundCell")
-		cell.selectionStyle = .default
-		cell.accessoryType = .disclosureIndicator
-		cell.backgroundColor = .clear
+		cell.selectionStyle = isMultiSelectMode ? .none : .default
+		cell.accessoryType = .none
+		
 		let source = getApplication(row: indexPath.row, section: indexPath.section)
 		let filePath = getApplicationFilePath(with: source!, row: indexPath.row, section: indexPath.section)
 		
+		// Configure cell for multi-select mode
+		if isMultiSelectMode {
+			let isSelected = selectedApps.contains(where: { $0 === source })
+			cell.accessoryView = createCheckboxAccessory(isSelected: isSelected)
+		} else {
+			cell.accessoryType = .disclosureIndicator
+			cell.accessoryView = nil
+		}
+		
+		cell.backgroundColor = .clear
 		
 		if let iconURL = source!.value(forKey: "iconURL") as? String {
 			let imagePath = filePath!.appendingPathComponent(iconURL)
@@ -290,11 +400,41 @@ extension LibraryViewController {
 		return cell
 	}
 	
+	private func createCheckboxAccessory(isSelected: Bool) -> UIView {
+		let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
+		let imageName = isSelected ? "checkmark.circle.fill" : "circle"
+		imageView.image = UIImage(systemName: imageName)
+		imageView.tintColor = isSelected ? .tintColor : .secondaryLabel
+		return imageView
+	}
+	
 	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		let source = getApplication(row: indexPath.row, section: indexPath.section)
-		let filePath = getApplicationFilePath(with: source!, row: indexPath.row, section: indexPath.section, getuuidonly: true)
-		let filePath2 = getApplicationFilePath(with: source!, row: indexPath.row, section: indexPath.section, getuuidonly: false)
-		let appName = "\((source!.value(forKey: "name") as? String ?? ""))"
+		guard let source = getApplication(row: indexPath.row, section: indexPath.section) else { return }
+		
+		if isMultiSelectMode {
+			// Handle selection in multi-select mode
+			if selectedApps.contains(where: { $0 === source }) {
+				// Deselect
+				if let index = selectedApps.firstIndex(where: { $0 === source }) {
+					selectedApps.remove(at: index)
+				}
+			} else {
+				// Select
+				selectedApps.append(source)
+			}
+			
+			// Update delete button state
+			updateDeleteButtonState()
+			
+			// Reload the row to update checkbox
+			tableView.reloadRows(at: [indexPath], with: .none)
+			return
+		}
+		
+		// Normal selection handling (unchanged from original)
+		let filePath = getApplicationFilePath(with: source, row: indexPath.row, section: indexPath.section, getuuidonly: true)
+		let filePath2 = getApplicationFilePath(with: source, row: indexPath.row, section: indexPath.section, getuuidonly: false)
+		let appName = "\((source.value(forKey: "name") as? String ?? ""))"
 		switch indexPath.section {
 		case 0:
 			if FileManager.default.fileExists(atPath: filePath2!.path) {
@@ -340,7 +480,7 @@ extension LibraryViewController {
 					button1.onTap = { [weak self] in
 						guard let self = self else { return }
 						self.popupVC.dismiss(animated: true)
-						self.startInstallProcess(meow: source!, filePath: filePath?.path ?? "")
+						self.startInstallProcess(meow: source, filePath: filePath?.path ?? "")
 					}
 					
 					let button4 = PopupViewControllerButton(
@@ -352,7 +492,7 @@ extension LibraryViewController {
 						guard let self = self else { return }
 						self.popupVC.dismiss(animated: true)
 						if let workspace = LSApplicationWorkspace.default() {
-							let success = workspace.openApplication(withBundleID: "\((source!.value(forKey: "bundleidentifier") as? String ?? ""))")
+							let success = workspace.openApplication(withBundleID: "\((source.value(forKey: "bundleidentifier") as? String ?? ""))")
 							if !success {
 								Debug.shared.log(message: "Unable to open, do you have the app installed?", type: .warning)
 							}
@@ -401,7 +541,7 @@ extension LibraryViewController {
 					button2.onTap = { [weak self] in
 						guard let self = self else { return }
 						self.popupVC.dismiss(animated: true)
-						self.shareFile(meow: source!, filePath: filePath?.path ?? "")
+						self.shareFile(meow: source, filePath: filePath?.path ?? "")
 					}
 					
 					popupVC.configureButtons([button1, button4, button3, button2])
@@ -433,7 +573,7 @@ extension LibraryViewController {
 				button1.onTap = { [weak self] in
 					guard let self = self else { return }
 					self.popupVC.dismiss(animated: true)
-					self.startSigning(meow: source!)
+					self.startSigning(meow: source)
 				}
 				
 				let button2 = PopupViewControllerButton(title: String.localized("LIBRARY_VIEW_CONTROLLER_SIGN_ACTION_INSTALL", arguments: appName), color: .quaternarySystemFill, titleColor: .tintColor)
@@ -447,7 +587,7 @@ extension LibraryViewController {
 						)
 						
                         let confirmAction = UIAlertAction(title: String.localized("INSTALL"), style: .default) { _ in
-							self.startInstallProcess(meow: source!, filePath: filePath?.path ?? "")
+							self.startInstallProcess(meow: source, filePath: filePath?.path ?? "")
 							
 						}
 						
@@ -496,6 +636,11 @@ extension LibraryViewController {
 	}
 	
 	override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+		// Disable swipe actions in multi-select mode
+		if isMultiSelectMode {
+			return nil
+		}
+		
 		let source = getApplication(row: indexPath.row, section: indexPath.section)
 		
 		let deleteAction = UIContextualAction(style: .destructive, title: String.localized("DELETE")) { (action, view, completionHandler) in
@@ -522,6 +667,11 @@ extension LibraryViewController {
 	}
 	
 	override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+		// Disable context menu in multi-select mode
+		if isMultiSelectMode {
+			return nil
+		}
+		
 		let source = getApplication(row: indexPath.row, section: indexPath.section)
 		let filePath = getApplicationFilePath(with: source!, row: indexPath.row, section: indexPath.section)
 		
@@ -563,8 +713,6 @@ extension LibraryViewController {
 		})
 		return configuration
 	}
-	
-	
 }
 
 extension LibraryViewController {
