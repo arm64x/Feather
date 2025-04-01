@@ -162,6 +162,7 @@
 "APPS_INFORMATION_TITLE_DELETED_FILE_TITLE" = "File has been deleted.";
 "APPS_INFORMATION_TITLE_DELETED_FILE_DESCRIPTION" = "This is a useless entry, it does not have a file and Feather will not allow you to install it. It's recommended you delete by swiping on the cell in the Apps tab.";
 // Application Section
+"APPS_INFORMATION_TITLE" = "Info";
 "APPS_INFORMATION_TITLE_NAME" = "Name";
 "APPS_INFORMATION_TITLE_VERSION" = "Version";
 "APPS_INFORMATION_TITLE_IDENTIFIER" = "Identifier";
