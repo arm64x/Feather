@@ -119,9 +119,9 @@
 
 // MARK: - SourcesViewController - Add Sources
 "SOURCES_VIEW_ADD_SOURCES_ALERT_TITLE" = "Thêm nguồn";
-"SOURCES_VIEW_ADD_SOURCES_ALERT_DESCRIPTION" = "Thêm URL nguồn AltStore";
-"SOURCES_VIEW_ADD_SOURCES_ALERT_BUTTON_IMPORT_REPO" = "Nhập nguồn ứng dụng";
-"SOURCES_VIEW_ADD_SOURCES_ALERT_BUTTON_EXPORT_REPO" = "Xuất nguồn ứng dụng";
+"SOURCES_VIEW_ADD_SOURCES_ALERT_DESCRIPTION" = "Thêm URL nguồn";
+"SOURCES_VIEW_ADD_SOURCES_ALERT_BUTTON_IMPORT_REPO" = "Nhập nguồn";
+"SOURCES_VIEW_ADD_SOURCES_ALERT_BUTTON_EXPORT_REPO" = "Chia sẻ nguồn";
 "SOURCES_VIEW_ADD_SOURCES_ALERT_BUTTON_EXPORT_REPO_ACTION_SUCCESS" = "Đã sao chép nguồn ứng dụng vào bộ nhớ tạm";
 "SOURCES_VIEW_ADD_SOURCES_ALERT_SUPPORT" = "Hỗ trợ nhập từ KravaSign và ESign";
 //Footer Validation
@@ -162,6 +162,7 @@
 "APPS_INFORMATION_TITLE_DELETED_FILE_TITLE" = "Tệp đã bị xóa.";
 "APPS_INFORMATION_TITLE_DELETED_FILE_DESCRIPTION" = "Đây là mục rỗng vì tệp ứng dụng đã bị xóa. Feather sẽ không cho phép cài đặt ứng dụng này. Bạn nên xóa mục này bằng cách vuốt trên ô ứng dụng trong mục Ứng dụng.";
 // Application Section
+"APPS_INFORMATION_TITLE" = "Thông tin ứng dụng";
 "APPS_INFORMATION_TITLE_NAME" = "Tên";
 "APPS_INFORMATION_TITLE_VERSION" = "Phiên bản";
 "APPS_INFORMATION_TITLE_IDENTIFIER" = "Định danh";
