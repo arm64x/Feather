@@ -232,13 +232,11 @@ func handleIPAFile(destinationURL: URL, uuid: String, dl: AppDownload) throws {
     group.enter()
     DispatchQueue.global(qos: .userInitiated).async {
         dl.importFile(url: destinationURL, uuid: uuid) { resultUrl, error in
-	    if let error = error {
-		functionError = HandleIPAFileError.importFailed(error.localizedDescription)
-		semaphore.signal()
-		return
-	    }
             guard let validNewUrl = resultUrl, error == nil else {
                 functionError = error ?? HandleIPAFileError.importFailed("No URL returned from import.")
+		if let nsError = error as NSError? {
+	            Debug.shared.log(message: nsError.localizedDescription, type: .error)
+	        }
                 group.leave()
                 return
             }
