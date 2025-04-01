@@ -232,18 +232,27 @@ func handleIPAFile(destinationURL: URL, uuid: String, dl: AppDownload) throws {
     group.enter()
     DispatchQueue.global(qos: .userInitiated).async {
         dl.importFile(url: destinationURL, uuid: uuid) { resultUrl, error in
-            guard let validNewUrl = resultUrl, error == nil else {
-                functionError = error ?? HandleIPAFileError.importFailed("No URL returned from import.")
-		if let nsError = error as NSError? {
-	            Debug.shared.log(message: nsError.localizedDescription, type: .error)
-	        }
+            if let error = error {
+                functionError = HandleIPAFileError.importFailed(error.localizedDescription)
+                group.leave()
+                return
+            }
+            
+            guard let validNewUrl = resultUrl else {
+                functionError = HandleIPAFileError.importFailed("No URL returned from import.")
                 group.leave()
                 return
             }
             
             dl.extractCompressedBundle(packageURL: validNewUrl.path) { bundle, error in
-                guard let validTargetBundle = bundle, error == nil else {
-                    functionError = error ?? HandleIPAFileError.extractionFailed("No bundle returned from extraction.")
+                if let error = error {
+                    functionError = HandleIPAFileError.extractionFailed(error.localizedDescription)
+                    group.leave()
+                    return
+                }
+                
+                guard let validTargetBundle = bundle else {
+                    functionError = HandleIPAFileError.extractionFailed("No bundle returned from extraction.")
                     group.leave()
                     return
                 }
@@ -252,7 +261,7 @@ func handleIPAFile(destinationURL: URL, uuid: String, dl: AppDownload) throws {
                 
                 dl.addToApps(bundlePath: validTargetBundle, uuid: uuid, sourceLocation: NSLocalizedString("LIBRARY_VIEW_CONTROLLER_IMPORTED_FROM_FILE", comment: "")) { error in
                     if let error = error {
-                        functionError = error
+                        functionError = HandleIPAFileError.additionFailed(error.localizedDescription)
                     }
                     group.leave()
                 }
