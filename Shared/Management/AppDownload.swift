@@ -97,7 +97,7 @@ class AppDownload: NSObject {
             
             do {
                 // Optimize: Use performant unzip with reduced I/O overhead
-		try fileManager.unzipItem(at: fileURL, to: destinationURL, skipCRC32: false, progress: progress, preferredEncoding: nil, overwriteMode: .always)
+		try fileManager.unzipItem(at: fileURL, to: destinationURL, progress: progress)
                 
                 print("⏱️ Unzip duration: \(Date().timeIntervalSince(startTime))s")
                 
