@@ -138,7 +138,7 @@ class AppDownload: NSObject {
                 }
                 
             } catch {
-                Debug.shared.log(message: "❌ Unzip error: \(error.localizedDescription)")
+                Debug.shared.log(message: "\(error)")
                 try? fileManager.removeItem(at: destinationURL)
                 self.cancelDownload()
                 DispatchQueue.main.async {
