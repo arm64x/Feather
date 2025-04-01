@@ -37,7 +37,7 @@ class AppsInformationViewController: UIViewController {
 	
 	var sectionTitles = 
 	[
-		"Info",
+		String.localized("APPS_INFORMATION_TITLE"),
 		"",
 		String.localized("APPS_INFORMATION_SECTION_TITLE_NAME"),
 		""
