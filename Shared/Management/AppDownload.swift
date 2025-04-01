@@ -234,6 +234,7 @@ func handleIPAFile(destinationURL: URL, uuid: String, dl: AppDownload) throws {
         dl.importFile(url: destinationURL, uuid: uuid) { resultUrl, error in
             if let error = error {
                 functionError = HandleIPAFileError.importFailed(error.localizedDescription)
+		semaphore.signal()
                 group.leave()
                 return
             }
