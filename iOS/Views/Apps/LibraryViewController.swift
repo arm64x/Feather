@@ -532,9 +532,16 @@ extension LibraryViewController {
 	                
 	                // Trở về main queue để cập nhật UI
 	                DispatchQueue.main.async {
-	                    self.signedApps?.remove(at: indexPath.row)
+	                    // Fix crash: Xử lý cho cả trường hợp đang lọc dữ liệu
+	                    if self.isFiltering {
+	                        self.filteredSignedApps.remove(at: indexPath.row)
+	                    } else {
+	                        self.signedApps?.remove(at: indexPath.row)
+	                    }
+	                    
 	                    tableView.isUserInteractionEnabled = true
-	                    self.tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
+	                    // Sử dụng fetchSources() để cập nhật toàn bộ dữ liệu sau khi xóa
+	                    self.fetchSources()
 	                    completionHandler(true)
 	                }
 	                
@@ -543,9 +550,16 @@ extension LibraryViewController {
 	                
 	                // Trở về main queue để cập nhật UI
 	                DispatchQueue.main.async {
-	                    self.downloadedApps?.remove(at: indexPath.row)
+	                    // Fix crash: Xử lý cho cả trường hợp đang lọc dữ liệu
+	                    if self.isFiltering {
+	                        self.filteredDownloadedApps.remove(at: indexPath.row)
+	                    } else {
+	                        self.downloadedApps?.remove(at: indexPath.row)
+	                    }
+	                    
 	                    tableView.isUserInteractionEnabled = true
-	                    self.tableView.reloadSections(IndexSet(integer: 1), with: .automatic)
+	                    // Sử dụng fetchSources() để cập nhật toàn bộ dữ liệu sau khi xóa
+	                    self.fetchSources()
 	                    completionHandler(true)
 	                }
 	                
