@@ -96,8 +96,7 @@ class LibraryViewController: UITableViewController {
 		
 		present(loaderAlert!, animated: true)
 		
-		// Create mock source if in debug mode
-		if isDebugMode {
+		#if DEBUG
 			let mockSource = SourceRefreshOperation()
 			mockSource.createMockSource { mockSourceData in
 				if let sourceData = mockSourceData {
@@ -109,8 +108,7 @@ class LibraryViewController: UITableViewController {
 					}
 				}
 			}
-		} else {
-			// Normal source fetch
+		#else
 			SourceGET().downloadURL(from: sourceURL) { [weak self] result in
 				guard let self = self else { return }
 				
@@ -131,7 +129,7 @@ class LibraryViewController: UITableViewController {
 					}
 				}
 			}
-		}
+		#endif
 	}
 	
 	private func handleSourceData(_ sourceData: SourcesData, for signedApp: SignedApps) {
@@ -216,15 +214,6 @@ class LibraryViewController: UITableViewController {
 		DispatchQueue.main.async {
 			self.loaderAlert?.dismiss(animated: true)
 		}
-	}
-	
-	private var isDebugMode: Bool {
-		var isDebug = false
-		assert({
-			isDebug = true
-			return true
-		}())
-		return isDebug
 	}
 }
 
