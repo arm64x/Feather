@@ -14,7 +14,7 @@ import NIOTLS
 
 struct AppData {
 	public var id: String
-	public var version: Int 
+	public var version: Float 
 	public var name: String
 }
 
