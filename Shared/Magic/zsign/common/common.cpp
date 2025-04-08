@@ -398,6 +398,13 @@ bool IsPathSuffix(const string &strPath, const char *suffix)
 	return false;
 }
 
+bool EnumFolder(const char* szFolder, bool bRecursive, enum_folder_callback filter, enum_folder_callback callback)
+{
+	string strFolder = szFolder;
+	if (strFolder.empty() || NULL == callback) {
+		return false;
+	}
+
 time_t GetUnixStamp()
 {
 	time_t ustime = 0;
