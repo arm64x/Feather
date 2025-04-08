@@ -102,45 +102,51 @@ bool ZAppBundle::GetSignFolderInfo(const string &strFolder, JValue &jvNode, bool
 
 bool ZAppBundle::GetObjectsToSign(const string &strFolder, JValue &jvInfo)
 {
-    vector<string> folders;
-    folders.push_back(strFolder);
-    
-    while (!folders.empty()) {
-        string currentFolder = folders.back();
-        folders.pop_back();
-        
-        DIR *dir = opendir(currentFolder.c_str());
-        if (NULL != dir) {
-            dirent *ptr = readdir(dir);
-            while (NULL != ptr) {
-                if (0 != strcmp(ptr->d_name, ".") && 0 != strcmp(ptr->d_name, "..")) {
-                    string strPath = currentFolder + "/" + ptr->d_name;
-                    
-                    if (DT_DIR == ptr->d_type) {
-                        if (IsPathSuffix(strPath, ".app") ||
-                            IsPathSuffix(strPath, ".appex") ||
-                            IsPathSuffix(strPath, ".framework") ||
-                            IsPathSuffix(strPath, ".xctest")) {
-                            JValue jvNode;
-                            jvNode["path"] = strPath.substr(m_strAppFolder.size() + 1);
-                            if (GetSignFolderInfo(strPath, jvNode)) {
-                                jvInfo["folders"].push_back(jvNode);
-                            }
-                        } else {
-                            folders.push_back(strPath);
-                        }
-                    } else if (DT_REG == ptr->d_type) {
-                        if (IsPathSuffix(strPath, ".dylib")) {
-                            jvInfo["files"].push_back(strPath.substr(m_strAppFolder.size() + 1));
-                        }
-                    }
-                }
-                ptr = readdir(dir);
-            }
-            closedir(dir);
-        }
-    }
-    return true;
+	DIR *dir = opendir(strFolder.c_str());
+	if (NULL != dir)
+	{
+		dirent *ptr = readdir(dir);
+		while (NULL != ptr)
+		{
+			if (0 != strcmp(ptr->d_name, ".") && 0 != strcmp(ptr->d_name, ".."))
+			{
+				string strNode = strFolder + "/" + ptr->d_name;
+				if (strcmp(ptr->d_name, "SC_Info") == 0)
+		                {
+		                	continue;
+		                }
+				if (DT_DIR == ptr->d_type)
+				{
+					if (IsPathSuffix(strNode, ".app") || IsPathSuffix(strNode, ".appex") || IsPathSuffix(strNode, ".framework") || IsPathSuffix(strNode, ".xctest"))
+					{
+						JValue jvNode;
+						jvNode["path"] = strNode.substr(m_strAppFolder.size() + 1);
+						if (GetSignFolderInfo(strNode, jvNode))
+						{
+							if (GetObjectsToSign(strNode, jvNode))
+							{
+								jvInfo["folders"].push_back(jvNode);
+							}
+						}
+					}
+					else
+					{
+						GetObjectsToSign(strNode, jvInfo);
+					}
+				}
+				else if (DT_REG == ptr->d_type)
+				{
+					if (IsPathSuffix(strNode, ".dylib"))
+					{
+						jvInfo["files"].push_back(strNode.substr(m_strAppFolder.size() + 1));
+					}
+				}
+			}
+			ptr = readdir(dir);
+		}
+		closedir(dir);
+	}
+	return true;
 }
 
 void ZAppBundle::GetFolderFiles(const string &strFolder, const string &strBaseFolder, set<string> &setFiles)
@@ -184,6 +190,7 @@ bool ZAppBundle::GenerateCodeResources(const string &strFolder, JValue &jvCodeRe
 	string strBundleExe = jvInfo["CFBundleExecutable"];
 	setFiles.erase(strBundleExe);
 	setFiles.erase("_CodeSignature/CodeResources");
+	setFiles.erase("SC_Info");
 
 	jvCodeRes["files"] = JValue(JValue::E_OBJECT);
 	jvCodeRes["files2"] = JValue(JValue::E_OBJECT);
@@ -239,6 +246,10 @@ bool ZAppBundle::GenerateCodeResources(const string &strFolder, JValue &jvCodeRe
 		}
 	}
 
+	jvCodeRes["rules"]["^SC_Info$"]["omit"] = true;
+	jvCodeRes["rules"]["^SC_Info$"]["weight"] = 2000.0;
+	jvCodeRes["rules2"]["^SC_Info$"]["omit"] = true;
+	jvCodeRes["rules2"]["^SC_Info$"]["weight"] = 2000.0;
 	jvCodeRes["rules"]["^.*"] = true;
 	jvCodeRes["rules"]["^.*\\.lproj/"]["optional"] = true;
 	jvCodeRes["rules"]["^.*\\.lproj/"]["weight"] = 1000.0;
