@@ -102,26 +102,45 @@ bool ZAppBundle::GetSignFolderInfo(const string &strFolder, JValue &jvNode, bool
 
 bool ZAppBundle::GetObjectsToSign(const string &strFolder, JValue &jvInfo)
 {
-	ZFile::EnumFolder(strFolder.c_str(), true, NULL, [&](bool bFolder, const string& strPath) {
-		if (bFolder) {
-			if (ZFile::IsPathSuffix(strPath, ".app") ||
-				ZFile::IsPathSuffix(strPath, ".appex") ||
-				ZFile::IsPathSuffix(strPath, ".framework") ||
-				ZFile::IsPathSuffix(strPath, ".xctest")) {
-				jvalue jvNode;
-				if (GetSignFolderInfo(strPath, jvNode)) {
-					jvInfo["folders"].push_back(jvNode);
-				}
-			}
-		} else {
-			if (ZFile::IsPathSuffix(strPath, ".dylib")) {
-				jvInfo["files"].push_back(strPath.substr(m_strAppFolder.size() + 1));
-			}
-		}
-		return false;
-	});
-
-	return true;
+    vector<string> folders;
+    folders.push_back(strFolder);
+    
+    while (!folders.empty()) {
+        string currentFolder = folders.back();
+        folders.pop_back();
+        
+        DIR *dir = opendir(currentFolder.c_str());
+        if (NULL != dir) {
+            dirent *ptr = readdir(dir);
+            while (NULL != ptr) {
+                if (0 != strcmp(ptr->d_name, ".") && 0 != strcmp(ptr->d_name, "..")) {
+                    string strPath = currentFolder + "/" + ptr->d_name;
+                    
+                    if (DT_DIR == ptr->d_type) {
+                        if (IsPathSuffix(strPath, ".app") ||
+                            IsPathSuffix(strPath, ".appex") ||
+                            IsPathSuffix(strPath, ".framework") ||
+                            IsPathSuffix(strPath, ".xctest")) {
+                            JValue jvNode;
+                            jvNode["path"] = strPath.substr(m_strAppFolder.size() + 1);
+                            if (GetSignFolderInfo(strPath, jvNode)) {
+                                jvInfo["folders"].push_back(jvNode);
+                            }
+                        } else {
+                            folders.push_back(strPath);
+                        }
+                    } else if (DT_REG == ptr->d_type) {
+                        if (IsPathSuffix(strPath, ".dylib")) {
+                            jvInfo["files"].push_back(strPath.substr(m_strAppFolder.size() + 1));
+                        }
+                    }
+                }
+                ptr = readdir(dir);
+            }
+            closedir(dir);
+        }
+    }
+    return true;
 }
 
 void ZAppBundle::GetFolderFiles(const string &strFolder, const string &strBaseFolder, set<string> &setFiles)
