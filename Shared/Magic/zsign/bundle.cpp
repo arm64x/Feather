@@ -102,47 +102,54 @@ bool ZAppBundle::GetSignFolderInfo(const string &strFolder, JValue &jvNode, bool
 
 bool ZAppBundle::GetObjectsToSign(const string &strFolder, JValue &jvInfo)
 {
-	DIR *dir = opendir(strFolder.c_str());
-	if (NULL != dir)
-	{
-		dirent *ptr = readdir(dir);
-		while (NULL != ptr)
-		{
-			if (0 != strcmp(ptr->d_name, ".") && 0 != strcmp(ptr->d_name, ".."))
-			{
-				string strNode = strFolder + "/" + ptr->d_name;
-				if (DT_DIR == ptr->d_type)
-				{
-					if (IsPathSuffix(strNode, ".app") || IsPathSuffix(strNode, ".appex") || IsPathSuffix(strNode, ".framework") || IsPathSuffix(strNode, ".xctest"))
-					{
-						JValue jvNode;
-						jvNode["path"] = strNode.substr(m_strAppFolder.size() + 1);
-						if (GetSignFolderInfo(strNode, jvNode))
-						{
-							if (GetObjectsToSign(strNode, jvNode))
-							{
-								jvInfo["folders"].push_back(jvNode);
-							}
-						}
-					}
-					else
-					{
-						GetObjectsToSign(strNode, jvInfo);
-					}
-				}
-				else if (DT_REG == ptr->d_type)
-				{
-					if (IsPathSuffix(strNode, ".dylib"))
-					{
-						jvInfo["files"].push_back(strNode.substr(m_strAppFolder.size() + 1));
-					}
-				}
-			}
-			ptr = readdir(dir);
-		}
-		closedir(dir);
-	}
-	return true;
+    DIR *dir = opendir(strFolder.c_str());
+    if (NULL != dir)
+    {
+        dirent *ptr = readdir(dir);
+        while (NULL != ptr)
+        {
+            if (0 != strcmp(ptr->d_name, ".") && 0 != strcmp(ptr->d_name, ".."))
+            {
+                string strNode = strFolder + "/" + ptr->d_name;
+                
+                // Sử dụng stat để kiểm tra loại đối tượng thay vì d_type
+                struct stat st;
+                if (stat(strNode.c_str(), &st) == 0)
+                {
+                    if (S_ISDIR(st.st_mode)) // Kiểm tra chính xác hơn nếu là thư mục
+                    {
+                        if (IsPathSuffix(strNode, ".app") || IsPathSuffix(strNode, ".appex") || 
+                            IsPathSuffix(strNode, ".framework") || IsPathSuffix(strNode, ".xctest"))
+                        {
+                            JValue jvNode;
+                            jvNode["path"] = strNode.substr(m_strAppFolder.size() + 1);
+                            if (GetSignFolderInfo(strNode, jvNode))
+                            {
+                                if (GetObjectsToSign(strNode, jvNode))
+                                {
+                                    jvInfo["folders"].push_back(jvNode);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            GetObjectsToSign(strNode, jvInfo);
+                        }
+                    }
+                    else if (S_ISREG(st.st_mode)) // Là file thông thường
+                    {
+                        if (IsPathSuffix(strNode, ".dylib"))
+                        {
+                            jvInfo["files"].push_back(strNode.substr(m_strAppFolder.size() + 1));
+                        }
+                    }
+                }
+            }
+            ptr = readdir(dir);
+        }
+        closedir(dir);
+    }
+    return true;
 }
 
 void ZAppBundle::GetFolderFiles(const string &strFolder, const string &strBaseFolder, set<string> &setFiles)
