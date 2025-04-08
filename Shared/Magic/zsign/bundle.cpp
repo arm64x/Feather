@@ -186,7 +186,6 @@ bool ZAppBundle::GenerateCodeResources(const string &strFolder, JValue &jvCodeRe
 	string strBundleExe = jvInfo["CFBundleExecutable"];
 	setFiles.erase(strBundleExe);
 	setFiles.erase("_CodeSignature/CodeResources");
-	setFiles.erase("SC_Info");
 
 	jvCodeRes["files"] = JValue(JValue::E_OBJECT);
 	jvCodeRes["files2"] = JValue(JValue::E_OBJECT);
