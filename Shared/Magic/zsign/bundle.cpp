@@ -105,6 +105,21 @@ bool ZAppBundle::GetObjectsToSign(const string &strFolder, JValue &jvInfo)
 	DIR *dir = opendir(strFolder.c_str());
 	if (NULL != dir)
 	{
+		bool isEmpty = true;
+		dirent *checkPtr = readdir(dir);
+		while (NULL != checkPtr) {
+			if (0 != strcmp(checkPtr->d_name, ".") && 0 != strcmp(checkPtr->d_name, "..")) {
+				isEmpty = false;
+				break;
+			}
+			checkPtr = readdir(dir);
+		}
+		if (isEmpty) {
+			closedir(dir);
+			return true;
+		}
+		rewinddir(dir);
+		
 		dirent *ptr = readdir(dir);
 		while (NULL != ptr)
 		{
