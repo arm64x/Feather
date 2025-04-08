@@ -187,11 +187,9 @@ bool AppendFile(const char *szFile, const string &strData)
 
 bool IsFolder(const char *szFolder)
 {
-    struct stat st;
-    if (stat(szFolder, &st) == 0) {
-        return S_ISDIR(st.st_mode);
-    }
-    return false;
+	struct stat st;
+	stat(szFolder, &st);
+	return S_ISDIR(st.st_mode);
 }
 
 bool IsFolderV(const char *szFormatPath, ...)
