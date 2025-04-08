@@ -110,13 +110,6 @@ bool ZAppBundle::GetObjectsToSign(const string &strFolder, JValue &jvInfo)
 		{
 			if (0 != strcmp(ptr->d_name, ".") && 0 != strcmp(ptr->d_name, ".."))
 			{
-				if (strcmp(ptr->d_name, "SC_Info") == 0 && DT_DIR == ptr->d_type)
-                		{
-                    			ZLog::DebugV(">>> Skipping SC_Info directory in GetObjectsToSign: %s/%s\n", strFolder.c_str(), ptr->d_name);
-                    			ptr = readdir(dir);
-                    			continue;
-                		}
-				
 				string strNode = strFolder + "/" + ptr->d_name;
 				if (DT_DIR == ptr->d_type)
 				{
@@ -165,12 +158,6 @@ void ZAppBundle::GetFolderFiles(const string &strFolder, const string &strBaseFo
 				string strNode = strFolder;
 				strNode += "/";
 				strNode += ptr->d_name;
-				if (strcmp(ptr->d_name, "SC_Info") == 0 && DT_DIR == ptr->d_type)
-		                {
-		                	ZLog::DebugV(">>> Skipping SC_Info directory: %s\n", strNode.c_str());
-		                	ptr = readdir(dir);
-		                	continue;
-		                }
 				if (DT_DIR == ptr->d_type)
 				{
 					GetFolderFiles(strNode, strBaseFolder, setFiles);
@@ -335,11 +322,6 @@ bool ZAppBundle::SignNode(JValue &jvNode)
 	{
 		for (size_t i = 0; i < jvNode["folders"].size(); i++)
 		{
-			if (jvNode["folders"][i]["path"].asString().find("SC_Info") != string::npos)
-	            	{
-	                	ZLog::DebugV(">>> Skipping SC_Info folder in SignNode: %s\n", jvNode["folders"][i]["path"].asCString());
-	                	continue;
-	            	}
 			if (!SignNode(jvNode["folders"][i]))
 			{
 				return false;
