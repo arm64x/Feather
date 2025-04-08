@@ -102,61 +102,25 @@ bool ZAppBundle::GetSignFolderInfo(const string &strFolder, JValue &jvNode, bool
 
 bool ZAppBundle::GetObjectsToSign(const string &strFolder, JValue &jvInfo)
 {
-	DIR *dir = opendir(strFolder.c_str());
-	if (NULL != dir)
-	{
-		bool isEmpty = true;
-		dirent *checkPtr = readdir(dir);
-		while (NULL != checkPtr) {
-			if (0 != strcmp(checkPtr->d_name, ".") && 0 != strcmp(checkPtr->d_name, "..")) {
-				isEmpty = false;
-				break;
-			}
-			checkPtr = readdir(dir);
-		}
-		if (isEmpty) {
-			closedir(dir);
-			return true;
-		}
-		rewinddir(dir);
-		
-		dirent *ptr = readdir(dir);
-		while (NULL != ptr)
-		{
-			if (0 != strcmp(ptr->d_name, ".") && 0 != strcmp(ptr->d_name, ".."))
-			{
-				string strNode = strFolder + "/" + ptr->d_name;
-				if (DT_DIR == ptr->d_type)
-				{
-					if (IsPathSuffix(strNode, ".app") || IsPathSuffix(strNode, ".appex") || IsPathSuffix(strNode, ".framework") || IsPathSuffix(strNode, ".xctest"))
-					{
-						JValue jvNode;
-						jvNode["path"] = strNode.substr(m_strAppFolder.size() + 1);
-						if (GetSignFolderInfo(strNode, jvNode))
-						{
-							if (GetObjectsToSign(strNode, jvNode))
-							{
-								jvInfo["folders"].push_back(jvNode);
-							}
-						}
-					}
-					else
-					{
-						GetObjectsToSign(strNode, jvInfo);
-					}
-				}
-				else if (DT_REG == ptr->d_type)
-				{
-					if (IsPathSuffix(strNode, ".dylib"))
-					{
-						jvInfo["files"].push_back(strNode.substr(m_strAppFolder.size() + 1));
-					}
+	ZFile::EnumFolder(strFolder.c_str(), true, NULL, [&](bool bFolder, const string& strPath) {
+		if (bFolder) {
+			if (ZFile::IsPathSuffix(strPath, ".app") ||
+				ZFile::IsPathSuffix(strPath, ".appex") ||
+				ZFile::IsPathSuffix(strPath, ".framework") ||
+				ZFile::IsPathSuffix(strPath, ".xctest")) {
+				jvalue jvNode;
+				if (GetSignFolderInfo(strPath, jvNode)) {
+					jvInfo["folders"].push_back(jvNode);
 				}
 			}
-			ptr = readdir(dir);
+		} else {
+			if (ZFile::IsPathSuffix(strPath, ".dylib")) {
+				jvInfo["files"].push_back(strPath.substr(m_strAppFolder.size() + 1));
+			}
 		}
-		closedir(dir);
-	}
+		return false;
+	});
+
 	return true;
 }
 
