@@ -242,10 +242,6 @@ bool ZAppBundle::GenerateCodeResources(const string &strFolder, JValue &jvCodeRe
 		}
 	}
 
-	jvCodeRes["rules"]["^SC_Info$"]["omit"] = true;
-	jvCodeRes["rules"]["^SC_Info$"]["weight"] = 2000.0;
-	jvCodeRes["rules2"]["^SC_Info$"]["omit"] = true;
-	jvCodeRes["rules2"]["^SC_Info$"]["weight"] = 2000.0;
 	jvCodeRes["rules"]["^.*"] = true;
 	jvCodeRes["rules"]["^.*\\.lproj/"]["optional"] = true;
 	jvCodeRes["rules"]["^.*\\.lproj/"]["weight"] = 1000.0;
@@ -253,6 +249,8 @@ bool ZAppBundle::GenerateCodeResources(const string &strFolder, JValue &jvCodeRe
 	jvCodeRes["rules"]["^.*\\.lproj/locversion.plist$"]["weight"] = 1100.0;
 	jvCodeRes["rules"]["^Base\\.lproj/"]["weight"] = 1010.0;
 	jvCodeRes["rules"]["^version.plist$"] = true;
+	jvCodeRes["rules"]["^SC_Info$"]["omit"] = true;
+	jvCodeRes["rules"]["^SC_Info$"]["weight"] = 2000.0;
 
 	jvCodeRes["rules2"]["^.*"] = true;
 	jvCodeRes["rules2"][".*\\.dSYM($|/)"]["weight"] = 11.0;
@@ -269,6 +267,8 @@ bool ZAppBundle::GenerateCodeResources(const string &strFolder, JValue &jvCodeRe
 	jvCodeRes["rules2"]["^PkgInfo$"]["weight"] = 20.0;
 	jvCodeRes["rules2"]["^embedded\\.provisionprofile$"]["weight"] = 20.0;
 	jvCodeRes["rules2"]["^version\\.plist$"]["weight"] = 20.0;
+	jvCodeRes["rules2"]["^SC_Info$"]["omit"] = true;
+	jvCodeRes["rules2"]["^SC_Info$"]["weight"] = 2000.0;
 
 	return true;
 }
