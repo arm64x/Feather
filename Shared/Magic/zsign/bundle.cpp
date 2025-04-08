@@ -14,47 +14,52 @@ ZAppBundle::ZAppBundle()
 
 bool ZAppBundle::FindAppFolder(const string &strFolder, string &strAppFolder)
 {
-    if (IsPathSuffix(strFolder, ".app") || IsPathSuffix(strFolder, ".appex"))
-    {
-        strAppFolder = strFolder;
-        return true;
-    }
+	if (IsPathSuffix(strFolder, ".app") || IsPathSuffix(strFolder, ".appex"))
+	{
+		strAppFolder = strFolder;
+		return true;
+	}
 
-    DIR *dir = opendir(strFolder.c_str());
-    if (NULL != dir)
-    {
-        dirent *ptr = readdir(dir);
-        while (NULL != ptr)
-        {
-            if (0 != strcmp(ptr->d_name, ".") && 0 != strcmp(ptr->d_name, "..") && 0 != strcmp(ptr->d_name, "__MACOSX"))
-            {
-                bool isdir = false;
-                if (DT_DIR == ptr->d_type)
-                {
-                    isdir = true;
-                }
-                else if (DT_UNKNOWN == ptr->d_type)
-                {
-                    string strSubFolder = strFolder + "/" + ptr->d_name;
-                    isdir = IsFolder(strSubFolder.c_str());
-                }
-                
-                if (isdir)
-                {
-                    string strSubFolder = strFolder;
-                    strSubFolder += "/";
-                    strSubFolder += ptr->d_name;
-                    if (FindAppFolder(strSubFolder, strAppFolder))
-                    {
-                        return true;
-                    }
-                }
-            }
-            ptr = readdir(dir);
-        }
-        closedir(dir);
-    }
-    return false;
+	DIR *dir = opendir(strFolder.c_str());
+	if (NULL != dir)
+	{
+		dirent *ptr = readdir(dir);
+		while (NULL != ptr)
+		{
+			if (0 != strcmp(ptr->d_name, ".") && 0 != strcmp(ptr->d_name, "..") && 0 != strcmp(ptr->d_name, "__MACOSX"))
+			{
+				bool isdir = false;
+				if (DT_DIR == ptr->d_type)
+				{
+					isdir = true;
+				}
+				else if (DT_UNKNOWN == ptr->d_type)
+				{
+					// Entry type can be unknown depending on the underlying file system
+					ZLog::DebugV(">>> Unknown directory entry type for %s, falling back to POSIX-compatible check\n", strFolder.c_str());
+					struct stat statbuf;
+					stat(strFolder.c_str(), &statbuf);
+					if (S_ISDIR(statbuf.st_mode))
+					{
+						isdir = true;
+					}
+				}
+				if (isdir)
+				{
+					string strSubFolder = strFolder;
+					strSubFolder += "/";
+					strSubFolder += ptr->d_name;
+					if (FindAppFolder(strSubFolder, strAppFolder))
+					{
+						return true;
+					}
+				}
+			}
+			ptr = readdir(dir);
+		}
+		closedir(dir);
+	}
+	return false;
 }
 
 bool ZAppBundle::GetSignFolderInfo(const string &strFolder, JValue &jvNode, bool bGetName)
@@ -97,93 +102,75 @@ bool ZAppBundle::GetSignFolderInfo(const string &strFolder, JValue &jvNode, bool
 
 bool ZAppBundle::GetObjectsToSign(const string &strFolder, JValue &jvInfo)
 {
-    DIR *dir = opendir(strFolder.c_str());
-    if (NULL != dir)
-    {
-        dirent *ptr = readdir(dir);
-        while (NULL != ptr)
-        {
-            if (0 != strcmp(ptr->d_name, ".") && 0 != strcmp(ptr->d_name, ".."))
-            {
-                string strNode = strFolder + "/" + ptr->d_name;
-                
-                // Use IsFolder to check if the entry is a directory
-                bool isDir = false;
-                if (DT_DIR == ptr->d_type) {
-                    isDir = true;
-                } else if (DT_UNKNOWN == ptr->d_type) {
-                    isDir = IsFolder(strNode.c_str());
-                }
-                
-                if (isDir)
-                {
-                    if (IsPathSuffix(strNode, ".app") || IsPathSuffix(strNode, ".appex") || IsPathSuffix(strNode, ".framework") || IsPathSuffix(strNode, ".xctest"))
-                    {
-                        JValue jvNode;
-                        jvNode["path"] = strNode.substr(m_strAppFolder.size() + 1);
-                        if (GetSignFolderInfo(strNode, jvNode))
-                        {
-                            if (GetObjectsToSign(strNode, jvNode))
-                            {
-                                jvInfo["folders"].push_back(jvNode);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        GetObjectsToSign(strNode, jvInfo);
-                    }
-                }
-                else if (DT_REG == ptr->d_type || (!isDir && IsFileExistsV("%s", strNode.c_str())))
-                {
-                    if (IsPathSuffix(strNode, ".dylib"))
-                    {
-                        jvInfo["files"].push_back(strNode.substr(m_strAppFolder.size() + 1));
-                    }
-                }
-            }
-            ptr = readdir(dir);
-        }
-        closedir(dir);
-    }
-    return true;
+	DIR *dir = opendir(strFolder.c_str());
+	if (NULL != dir)
+	{
+		dirent *ptr = readdir(dir);
+		while (NULL != ptr)
+		{
+			if (0 != strcmp(ptr->d_name, ".") && 0 != strcmp(ptr->d_name, ".."))
+			{
+				string strNode = strFolder + "/" + ptr->d_name;
+				if (DT_DIR == ptr->d_type)
+				{
+					if (IsPathSuffix(strNode, ".app") || IsPathSuffix(strNode, ".appex") || IsPathSuffix(strNode, ".framework") || IsPathSuffix(strNode, ".xctest"))
+					{
+						JValue jvNode;
+						jvNode["path"] = strNode.substr(m_strAppFolder.size() + 1);
+						if (GetSignFolderInfo(strNode, jvNode))
+						{
+							if (GetObjectsToSign(strNode, jvNode))
+							{
+								jvInfo["folders"].push_back(jvNode);
+							}
+						}
+					}
+					else
+					{
+						GetObjectsToSign(strNode, jvInfo);
+					}
+				}
+				else if (DT_REG == ptr->d_type)
+				{
+					if (IsPathSuffix(strNode, ".dylib"))
+					{
+						jvInfo["files"].push_back(strNode.substr(m_strAppFolder.size() + 1));
+					}
+				}
+			}
+			ptr = readdir(dir);
+		}
+		closedir(dir);
+	}
+	return true;
 }
 
 void ZAppBundle::GetFolderFiles(const string &strFolder, const string &strBaseFolder, set<string> &setFiles)
 {
-    DIR *dir = opendir(strFolder.c_str());
-    if (NULL != dir)
-    {
-        dirent *ptr = readdir(dir);
-        while (NULL != ptr)
-        {
-            if (0 != strcmp(ptr->d_name, ".") && 0 != strcmp(ptr->d_name, ".."))
-            {
-                string strNode = strFolder;
-                strNode += "/";
-                strNode += ptr->d_name;
-                
-                // Use IsFolder to check if it's a directory
-                bool isDir = false;
-                if (DT_DIR == ptr->d_type) {
-                    isDir = true;
-                } else if (DT_UNKNOWN == ptr->d_type) {
-                    isDir = IsFolder(strNode.c_str());
-                }
-                
-                if (isDir)
-                {
-                    GetFolderFiles(strNode, strBaseFolder, setFiles);
-                }
-                else if (DT_REG == ptr->d_type || (!isDir && IsFileExistsV("%s", strNode.c_str())))
-                {
-                    setFiles.insert(strNode.substr(strBaseFolder.size() + 1));
-                }
-            }
-            ptr = readdir(dir);
-        }
-        closedir(dir);
-    }
+	DIR *dir = opendir(strFolder.c_str());
+	if (NULL != dir)
+	{
+		dirent *ptr = readdir(dir);
+		while (NULL != ptr)
+		{
+			if (0 != strcmp(ptr->d_name, ".") && 0 != strcmp(ptr->d_name, ".."))
+			{
+				string strNode = strFolder;
+				strNode += "/";
+				strNode += ptr->d_name;
+				if (DT_DIR == ptr->d_type)
+				{
+					GetFolderFiles(strNode, strBaseFolder, setFiles);
+				}
+				else if (DT_REG == ptr->d_type)
+				{
+					setFiles.insert(strNode.substr(strBaseFolder.size() + 1));
+				}
+			}
+			ptr = readdir(dir);
+		}
+		closedir(dir);
+	}
 }
 
 bool ZAppBundle::GenerateCodeResources(const string &strFolder, JValue &jvCodeRes)
