@@ -158,6 +158,12 @@ void ZAppBundle::GetFolderFiles(const string &strFolder, const string &strBaseFo
 				string strNode = strFolder;
 				strNode += "/";
 				strNode += ptr->d_name;
+				if (strcmp(ptr->d_name, "SC_Info") == 0 && DT_DIR == ptr->d_type)
+		                {
+		                	ZLog::DebugV(">>> Skipping SC_Info directory: %s\n", strNode.c_str());
+		                	ptr = readdir(dir);
+		                	continue;
+		                }
 				if (DT_DIR == ptr->d_type)
 				{
 					GetFolderFiles(strNode, strBaseFolder, setFiles);
@@ -248,8 +254,8 @@ bool ZAppBundle::GenerateCodeResources(const string &strFolder, JValue &jvCodeRe
 	jvCodeRes["rules"]["^.*\\.lproj/locversion.plist$"]["weight"] = 1100.0;
 	jvCodeRes["rules"]["^Base\\.lproj/"]["weight"] = 1010.0;
 	jvCodeRes["rules"]["^version.plist$"] = true;
-	jvCodeRes["rules"]["^SC_Info(/|$)"]["omit"] = true;
-	jvCodeRes["rules"]["^SC_Info(/|$)"]["weight"] = 2000.0;
+	jvCodeRes["rules"]["^SC_Info(/.*)?$"]["omit"] = true;
+	jvCodeRes["rules"]["^SC_Info(/.*)?$"]["weight"] = 2000.0;
 
 	jvCodeRes["rules2"]["^.*"] = true;
 	jvCodeRes["rules2"][".*\\.dSYM($|/)"]["weight"] = 11.0;
@@ -266,8 +272,8 @@ bool ZAppBundle::GenerateCodeResources(const string &strFolder, JValue &jvCodeRe
 	jvCodeRes["rules2"]["^PkgInfo$"]["weight"] = 20.0;
 	jvCodeRes["rules2"]["^embedded\\.provisionprofile$"]["weight"] = 20.0;
 	jvCodeRes["rules2"]["^version\\.plist$"]["weight"] = 20.0;
-	jvCodeRes["rules2"]["^SC_Info(/|$)"]["omit"] = true;
-	jvCodeRes["rules2"]["^SC_Info(/|$)"]["weight"] = 2000.0;
+	jvCodeRes["rules2"]["^SC_Info(/.*)?$"]["omit"] = true;
+	jvCodeRes["rules2"]["^SC_Info(/.*)?$"]["weight"] = 2000.0;
 
 	return true;
 }
