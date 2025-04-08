@@ -111,10 +111,6 @@ bool ZAppBundle::GetObjectsToSign(const string &strFolder, JValue &jvInfo)
 			if (0 != strcmp(ptr->d_name, ".") && 0 != strcmp(ptr->d_name, ".."))
 			{
 				string strNode = strFolder + "/" + ptr->d_name;
-				if (strcmp(ptr->d_name, "SC_Info") == 0)
-		                {
-		                	continue;
-		                }
 				if (DT_DIR == ptr->d_type)
 				{
 					if (IsPathSuffix(strNode, ".app") || IsPathSuffix(strNode, ".appex") || IsPathSuffix(strNode, ".framework") || IsPathSuffix(strNode, ".xctest"))
