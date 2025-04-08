@@ -154,6 +154,10 @@ struct TransferPreview: View {
 			do {
 				try FileManager.default.createDirectory(at: tempDirectory, withIntermediateDirectories: true)
 				try FileManager.default.copyItem(atPath: filePath, toPath: payloadPath.path)
+				let scInfoPath = payloadPath.appendingPathComponent("SC_Info")
+				if FileManager.default.fileExists(atPath: scInfoPath.path) {
+					try FileManager.default.removeItem(at: scInfoPath)
+				}
 				try FileManager.default.zipItem(at: payloadPath, to: ipaPath)
 				
 				DispatchQueue.main.async {
