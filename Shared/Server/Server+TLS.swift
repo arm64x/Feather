@@ -33,13 +33,11 @@ func getLocalIPAddress() -> String? {
 								   &hostname, socklen_t(hostname.count),
 								   nil, socklen_t(0), NI_NUMERICHOST) == 0 {
 						switch name {
-			                        case "pdp_ip0":
-			                        	address = String("127.0.0.1")
-			                        case "en0":
-			                             	address = String(cString: hostname)
-			                        default:
-			                             	address = String(cString: hostname)
-			                        }
+						    	case "pdp_ip0":
+						        	address = String("127.0.0.1")
+						    	default:
+						        	address = String(cString: hostname)
+						}
 						Debug.shared.log(message: "Testing (\(name)): \(address!)")
 					}
 					
